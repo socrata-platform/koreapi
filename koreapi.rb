@@ -33,29 +33,10 @@ end
 
 require 'sinatra/base'
 class KoreaPI < Sinatra::Base
+  set :public, File.dirname(__FILE__) + '/public'
+
   get "/?" do 
     erb :index 
-  end
-
-  get "/highcharts.src.js" do
-    File.read("views/highcharts.src.js")
-  end
-
-  get "/charting.js" do
-    File.read("views/charting.js")
-  end
-
-  get "/tablesorter.min.js" do
-    File.read("views/tablesorter.min.js")
-  end
-
-  get "/bg.jpg" do
-    File.read("views/bg.jpg")
-  end
-
-  get "/jquery.ui.css" do
-    content_type 'text/css', :charset => 'utf-8'
-    File.read("views/jquery.ui.css")
   end
 
   get "/q/:entity" do
@@ -66,3 +47,5 @@ class KoreaPI < Sinatra::Base
     Metrics.new.__query(entity, params)
   end
 end 
+
+

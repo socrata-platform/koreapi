@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Korea PI | Metrics, Bitch!</title>
+    <style>
+        body { 
+            background-image: url(bg.jpg);
+            background-position: right top; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-color: #fff; 
+            font-family: Helvetic, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+        }  
+        #q { font-size: 0.8em; }
+        #container { 
+            background-color: #eee; 
+            border-bottom-left-radius: 0.5em 0.5em; 
+            border-bottom-right-radius: 0.5em 0.5em; 
+            border-top-left-radius: 0.5em 0.5em; 
+            border-top-right-radius: 0.5em 0.5em; 
+            color: #333; 
+            line-height: 150%; 
+            margin: 100px auto 0; 
+            margin-bottom: 50px;
+            width: 600px; 
+            padding: 1em;
+            overflow: visible;
+        }
+
+        .center-radius
+        { 
+            width:800px;
+            height:300px;
+            overflow-y:auto;
+            margin: 1em auto; 
+            position: relative;
+            top: 0; 
+            left: -20%;
+            padding: 1em;
+            background-color: #eee; 
+            border-bottom-left-radius: 0.5em 0.5em; 
+            border-bottom-right-radius: 0.5em 0.5em; 
+            border-top-left-radius: 0.5em 0.5em; 
+            border-top-right-radius: 0.5em 0.5em; 
+        } 
+
+        #chart { width: 750px; margin: 0 auto; height: 300px;}
+
+        thead th { cursor: pointer; } 
+        table.metrics-object { width: 750px; } 
+        table.metrics-object th { text-align: left; }
+        col#metric { width: 650px; }
+        col#value { width: 100px; }
+        td { white-space: nowrap; overflow: hide;}
+        .pair { font-family: monospace; position: relative;} 
+    </style>
+    <link rel="stylesheet" href="jquery.ui.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="http://tablesorter.com/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="highcharts.src.js"></script>
+    <script type="text/javascript" src="charting.js"></script>
+    <script type="text/javascript">
+balboa = {};
+
+balboa.client = {
+    __query:  function(entityId, data, success, error) {
+        $.ajax({url: "q/" + entityId, data: data, cache: false, success: success, error: error});
+    },
+    get: function(entityId, date, type, success, error) {
+        balboa.client.__query(entityId, {type: type, date: date}, success, error);
+    },
+    series: function(entityId, start, end, type, success, error) {
+        balboa.client.__query(entityId, {series: type, start: start, end: end}, success, error);
+    },
+    range: function(entityId, start, end, success, error) {
+        balboa.client.__query(entityId, {range: 't', start: start, end: end}, success, error);
+    }
+};
+
+var renderObject = function($table, data) { 
+    if (data instanceof Array)
+    {
+        for (var i=0; i < data.length; i++)
+        {
+            var metric = data[i];
+            $table.append(
+                '<tr class="pair" id="' + metric + '">' +
+                '<td class="metric">' + metric + 
+                '</td><td class="value"><input class="metric" type="checkbox" id="chart-' + metric + '"></td></tr>'
+            );
+            metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {}); 
+        }
+        $("#chart").parent().show();
+    }
+    else
+    {
+        for (var metric in data)
+        {
+            if (metric.substr(0, 2) != "__")
+            {
+                $table.append(
+                    '<tr class="pair" id="' + metric + '">' +
+                    '<td class="metric">' + metric + 
+                    '</td><td class="value">' + data[metric] + 
+                    '</td></tr>'
+                );
+            }
+        }
+        $("#chart").parent().hide();
+    }
+
+    $table.tablesorter();
+}
+
+var uniques = function(series) {
+    var union = {};
+    for (var i=0; i < series.length; i++)
+    {
+        var slice = series[i];
+        for (var m in slice.metrics)
+        {
+            union[m] = null;
+        }
+    }
+
+    var keys = [];
+    for (var k in union)
+    {
+        keys.push(k);
+    }
+    return keys; 
+};
+
+var success = function(data) {
+    var current = $.parseJSON(data);
+
+    $("#data-container").show();
+
+    $("#data").data("metrics", current);
+
+    if (current instanceof Array)
+    {
+        $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Chart</th></tr></table>');
+        renderObject($("#data .metrics-object:first"), uniques(current)); 
+    }
+    else
+    {
+        $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Value</th></tr></table>');
+        renderObject($("#data .metrics-object:first"), current);
+    }
+
+    $("#data-container").show();
+};
+
+var error = function() {
+    // TODO
+};
+
+var filter = function(phrase) {
+    $("#data td.metric").each(function() {
+        if ($(this).html().match(phrase))
+        {
+            $(this).closest("tr").show();
+        }
+        else
+        {
+            $(this).closest("tr").hide();
+        }
+    });
+};
+
+var chart = function(name, show) {
+    var chartData = $("#chart").data("highchart");
+    if (show)
+    {
+        if (chartData.get(name) == null)
+        {
+            chartData.addSeries(metricsNS.getSeries(name, $("#data").data("metrics")));
+        }
+    }
+    else // hide
+    {
+        if (chartData.get(name) != null)
+        {
+            chartData.get(name).remove();
+        }
+    }
+};
+
+$(function() {
+    $("#q").submit(function() { 
+        var entity = $("#entity").val();
+        var type = $("#query-type").val();
+
+        if (type == "get")
+        {
+            balboa.client.get(entity, $("#get-date").val(), $("#get-summary-type").val(), success);
+        }
+        else if (type == "series")
+        {
+            balboa.client.series(entity, $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
+        }
+        else if (type == "range")
+        {
+            balboa.client.range(entity, $("#range-start").val(), $("#range-end").val(), success);
+        }
+
+        return false;
+    });
+    $(".query").hide();
+    $("#query-get").show();
+    $(".date").datepicker({dateFormat: "yy-mm-dd"});
+
+    $("#query-type").change(function() {
+        $(".query").hide();
+        $("#data-container").hide();
+        $("#query-" + $(this).val()).show();
+    });
+
+    $("#filter").click(function() {
+        filter($(this).val());
+    });
+
+    $("#filter").keypress(function() {
+        filter($(this).val());
+    });
+
+    $(".value input").live("change", function() {
+        var show = $(this).is(":checked");
+        var name = $(this).attr("id").replace("chart-", "");
+        chart(name, show);
+    });
+
+    $("#data-container").hide();
+});
+    </script>
+</head>
+
+<body>
+    <div id="container">
+    <div id="form">
+        <form id="q">
+            <input id="entity" placeholder="Metric Entity ID" />
+            <select id="query-type">
+                <option value="get">Single Summary Period</option>
+                <option value="series">Series Over Time</option>
+                <option value="range">Explicit Range</option>
+            </select>
+
+            <div id="active">
+                <div id="query-get" class="query">
+                    <h3>Single Summary Period Query</h3>
+                    <label for="get-date">Range that includes</label>
+                    <input id="get-date" type="text" class="date" />
+
+                    <label for="get-summary-type">Summary period</label>
+                    <select id="get-summary-type" class="summary-type">
+                        <option value="HOURLY">Hourly</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                    </select>
+                </div>
+
+                <div id="query-series" class="query">
+                    <h3>Series Over Time Query</h3>
+                    <label for="series-start">Start date</label>
+                    <input id="series-start" type="text" class="date" />
+
+                    <label for="series-end">End date</label>
+                    <input id="series-end" type="text" class="date" />
+
+                    <label for="series-summary-type">Summary period</label>
+                    <select id="series-summary-type" class="summary-type">
+                        <option value="HOURLY">Hourly</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                    </select>
+                </div>
+
+                <div id="query-range" class="query">
+                    <h3>Explicit Range</h3>
+                    <label for="range-start">Start date</label>
+                    <input id="range-start" type="text" class="date" />
+
+                    <label for="range-end">End date</label>
+                    <input id="range-end" type="text" class="date" />
+                </div>
+            </div>
+
+            <input name="submit" type="submit" value="Gimme metrics!"/>
+        </form>
+    </div>
+
+    <div id="data-container">
+        <div class="center-radius"> 
+            <form id="search">
+                <input id="filter" name="search" type="search" autocomplete="off" placeholder="Filter results">
+            </form>
+            <div id="data"> </div>
+        </div>
+        <div class="center-radius">
+            <div id="chart"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

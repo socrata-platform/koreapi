@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'sinatra'
 require 'net/http'
 
 class Hash
@@ -33,35 +31,38 @@ class Metrics
   end
 end
 
-get "/?" do 
-  erb :index 
-end
+require 'sinatra/base'
+class KoreaPI < Sinatra::Base
+  get "/?" do 
+    erb :index 
+  end
 
-get "/highcharts.src.js" do
-  File.read("views/highcharts.src.js")
-end
+  get "/highcharts.src.js" do
+    File.read("views/highcharts.src.js")
+  end
 
-get "/charting.js" do
-  File.read("views/charting.js")
-end
+  get "/charting.js" do
+    File.read("views/charting.js")
+  end
 
-get "/tablesorter.min.js" do
-  File.read("views/tablesorter.min.js")
-end
+  get "/tablesorter.min.js" do
+    File.read("views/tablesorter.min.js")
+  end
 
-get "/bg.jpg" do
-  File.read("views/bg.jpg")
-end
+  get "/bg.jpg" do
+    File.read("views/bg.jpg")
+  end
 
-get "/jquery.ui.css" do
-  content_type 'text/css', :charset => 'utf-8'
-  File.read("views/jquery.ui.css")
-end
+  get "/jquery.ui.css" do
+    content_type 'text/css', :charset => 'utf-8'
+    File.read("views/jquery.ui.css")
+  end
 
-get "/q/:entity" do
-  params.delete("_")
-  entity = params.delete("entity")
-  puts params.inspect
-  puts entity
-  Metrics.new.__query(entity, params)
-end
+  get "/q/:entity" do
+    params.delete("_")
+    entity = params.delete("entity")
+    puts params.inspect
+    puts entity
+    Metrics.new.__query(entity, params)
+  end
+end 

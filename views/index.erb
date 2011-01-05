@@ -67,17 +67,24 @@
 balboa = {};
 
 balboa.client = {
-    __query:  function(entityId, data, success, error) {
+    __range:  function(entityId, data, success, error) {
+        $.ajax({url: "q/" + entityId + "/range", data: data, cache: false, success: success, error: error});
+    },
+    __series:  function(entityId, data, success, error) {
+        $.ajax({url: "q/" + entityId + "/series", data: data, cache: false, success: success, error: error});
+    },
+    __get:  function(entityId, data, success, error) {
         $.ajax({url: "q/" + entityId, data: data, cache: false, success: success, error: error});
     },
-    get: function(entityId, date, type, success, error) {
-        balboa.client.__query(entityId, {type: type, date: date}, success, error);
+
+    get: function(entityId, date, period, success, error) {
+        balboa.client.__get(entityId, {period: period, date: date}, success, error);
     },
-    series: function(entityId, start, end, type, success, error) {
-        balboa.client.__query(entityId, {series: type, start: start, end: end}, success, error);
+    series: function(entityId, start, end, period, success, error) {
+        balboa.client.__series(entityId, {period: period, start: start, end: end}, success, error);
     },
     range: function(entityId, start, end, success, error) {
-        balboa.client.__query(entityId, {range: 't', start: start, end: end}, success, error);
+        balboa.client.__range(entityId, {start: start, end: end}, success, error);
     }
 };
 
@@ -104,8 +111,8 @@ var renderObject = function($table, data) {
             {
                 $table.append(
                     '<tr class="pair" id="' + metric + '">' +
-                    '<td class="metric">' + metric + 
-                    '</td><td class="value">' + data[metric] + 
+                    '<td class="metric">' + metric + ' (' + data[metric]["type"] + ')' +  
+                    '</td><td class="value">' + data[metric]["value"] + 
                     '</td></tr>'
                 );
             }
@@ -194,17 +201,17 @@ var chart = function(name, show) {
 $(function() {
     $("#q").submit(function() { 
         var entity = $("#entity").val();
-        var type = $("#query-type").val();
+        var period = $("#query-type").val();
 
-        if (type == "get")
+        if (period == "get")
         {
             balboa.client.get(entity, $("#get-date").val(), $("#get-summary-type").val(), success);
         }
-        else if (type == "series")
+        else if (period == "series")
         {
             balboa.client.series(entity, $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
         }
-        else if (type == "range")
+        else if (period == "range")
         {
             balboa.client.range(entity, $("#range-start").val(), $("#range-end").val(), success);
         }
@@ -263,6 +270,7 @@ $(function() {
                         <option value="DAILY">Daily</option>
                         <option value="WEEKLY">Weekly</option>
                         <option value="MONTHLY">Monthly</option>
+                        <option value="YEARLY">Yearly</option>
                     </select>
                 </div>
 

@@ -2,8 +2,8 @@
 
 metricsNS.getSeries = function(m, data)
 {
-    var startDate = data[0]['__start__'];
-    var pointInterval = data[0]['__end__'] - data[0]['__start__'] + 1;
+    var startDate = data[0]['start'];
+    var pointInterval = data[0]['end'] - data[0]['start'] + 1;
     var seriesDefaults = {
             id: m,
             lineWidth: 4,
@@ -18,15 +18,19 @@ metricsNS.getSeries = function(m, data)
     $.each(data, function(j, row)
     {
         if (intervalEnd > 0 &&
-            (row['__start__'] - intervalEnd) > 1)
+            (row['start'] - intervalEnd) > 1)
         {
-            for (var j = 0; j < ((row['__start__'] - intervalEnd) / pointInterval) - 1; j++)
+            for (var j = 0; j < ((row['start'] - intervalEnd) / pointInterval) - 1; j++)
             { 
                 ungappedData.push(0); 
             }
         }
-        intervalEnd = row['__end__'];
-        ungappedData.push((row.metrics || {})[m] || 0);
+        intervalEnd = row['end'];
+        var slice = (row.metrics || {});
+        var metric = (slice || {})[m];
+        var value = (metric || {value: 0}).value;
+
+        ungappedData.push(value);
     });
 
     var plot = $.extend({}, seriesDefaults, {
@@ -51,7 +55,7 @@ metricsNS.renderMetricsChart = function(data, $chart, sliceType, series, options
 
     // Get the date from which the data actually starts and setup some
     // chart configuration options.
-    var pointInterval = data[0]['__end__'] - data[0]['__start__'] + 1,
+    var pointInterval = data[0]['end'] - data[0]['start'] + 1,
         seriesToPlot = [],
         showLabels = true;
 
@@ -102,10 +106,13 @@ metricsNS.tooltipFormats = {
 
 metricsNS.chartDefaults = {
     chart: {
-        defaultSeriesType: 'line',
+        defaultSeriesType: 'spline',
         height: 300,
         margin: [20, 0, 30, 0],
         zoomType: 'x'
+    },
+    plotOptions: {
+        spline: { marker: {enabled: false}}
     },
     credits: {
         enabled: false

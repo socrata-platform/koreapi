@@ -7,27 +7,39 @@ class Hash
 end
 
 class Metrics
-  BALBOA = "balboa.sea1.socrata.com"
+  BALBOA = "127.0.0.1" 
   PORT = 9999
 
-  def __query(entity, options)
+  def __query(url)
     service = Net::HTTP.new(BALBOA, PORT)
-    puts "requesting -> /#{entity}?#{options.to_params}"
-    request = Net::HTTP::Get.new("/#{entity}?#{options.to_params}")
+    puts "requesting -> #{url}" 
+    request = Net::HTTP::Get.new(url)
     result = service.request(request)
     return result.body 
   end
 
+  def __get(entity, options)
+    return __query("/metrics/#{entity}?#{options.to_params}")
+  end
+
+  def __range(entity, options)
+    return __query("/metrics/#{entity}/range?#{options.to_params}")
+  end
+
+  def __series(entity, options)
+    return __query("/metrics/#{entity}/series?#{options.to_params}")
+  end
+
   def get(entity, date, type)
-    return __query(entity, {"date" => date, "type" => type})
+    return __get(entity, {"date" => date, "type" => type})
   end
 
   def range(entity, start, finish)
-    return __query(entity, {"start" => start, "end" => finish, "range" => "t"})
+    return __range(entity, {"start" => start, "end" => finish})
   end
 
   def series(entity, start, finish, type)
-    return __query(entity, {"start" => start, "end" => finish, "series" => type})
+    return __series(entity, {"start" => start, "end" => finish, "series" => type})
   end
 end
 
@@ -44,8 +56,23 @@ class KoreaPI < Sinatra::Base
     entity = params.delete("entity")
     puts params.inspect
     puts entity
-    Metrics.new.__query(entity, params)
+    Metrics.new.__get(entity, params)
+  end
+
+  get "/q/:entity/range" do
+    params.delete("_")
+    entity = params.delete("entity")
+    puts params.inspect
+    puts entity
+    Metrics.new.__range(entity, params)
+  end
+
+  get "/q/:entity/series" do
+    params.delete("_")
+    entity = params.delete("entity")
+    puts params.inspect
+    puts entity
+    Metrics.new.__series(entity, params)
   end
 end 
-
 

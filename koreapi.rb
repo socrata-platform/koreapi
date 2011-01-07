@@ -8,7 +8,7 @@ end
 
 class Metrics
   BALBOA = "127.0.0.1" 
-  PORT = 9999
+  PORT = 9898 
 
   def __query(url)
     service = Net::HTTP.new(BALBOA, PORT)

@@ -7,7 +7,7 @@ class Hash
 end
 
 class Metrics
-  BALBOA = "127.0.0.1" 
+  BALBOA = "balboa.sea1.socrata.com" 
   PORT = 9898 
 
   def __query(url)

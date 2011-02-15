@@ -106,7 +106,7 @@ metricsNS.tooltipFormats = {
 
 metricsNS.chartDefaults = {
     chart: {
-        defaultSeriesType: 'spline',
+        defaultSeriesType: 'line',
         height: 300,
         margin: [20, 0, 30, 0],
         zoomType: 'x'

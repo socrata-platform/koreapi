@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8" />
-    <title>Korea PI | Metrics, Bitch!</title>
+    <title>Korea PI | Metrics</title>
     <style>
         body { 
             background-image: url(bg.jpg);
@@ -85,6 +85,12 @@ balboa.client = {
     },
     range: function(entityId, start, end, success, error) {
         balboa.client.__range(entityId, {start: start, end: end}, success, error);
+    },
+    scriptlets: function() {
+      $.ajax({url: "/scriptlets", success: load_scripts, error: error});
+    },
+    scriptlet: function(name, entityId, start, end, period, success, error) {
+      window.open("/scriptlet/"+name + "?entity=" +entityId + "&period=" + period + "&start=" + start + "&end=" + end)
     }
 };
 
@@ -163,6 +169,14 @@ var success = function(data) {
     $("#data-container").show();
 };
 
+var load_scripts = function(data) {
+  var current = $.parseJSON(data);
+  var options = ""
+  for ( var script in current ) {
+    $("#scriptlet-name").append($('<option>').text(script).attr('value', script));
+  }
+};
+
 var error = function() {
     // TODO
 };
@@ -200,20 +214,23 @@ var chart = function(name, show) {
 
 $(function() {
     $("#q").submit(function() { 
-        var entity = $("#entity").val();
-        var period = $("#query-type").val();
+        var type = $("#query-type").val();
 
-        if (period == "get")
+        if (type == "get")
         {
-            balboa.client.get(entity, $("#get-date").val(), $("#get-summary-type").val(), success);
+            balboa.client.get($("#get-entity").val(), $("#get-date").val(), $("#get-summary-type").val(), success);
         }
-        else if (period == "series")
+        else if (type == "series")
         {
-            balboa.client.series(entity, $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
+            balboa.client.series($("#series-entity").val(), $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
         }
-        else if (period == "range")
+        else if (type == "range")
         {
-            balboa.client.range(entity, $("#range-start").val(), $("#range-end").val(), success);
+            balboa.client.range($("#range-entity").val(), $("#range-start").val(), $("#range-end").val(), success);
+        }
+        else if (type == "scriptlet")
+        {
+            balboa.client.scriptlet($("#scriptlet-name").val(), $("#scriptlet-entity").val(), $("#scriptlet-start").val(), $("#scriptlet-end").val(), $("#scriptlet-summary-type").val(), success);
         }
 
         return false;
@@ -241,7 +258,7 @@ $(function() {
         var name = $(this).attr("id").replace("chart-", "");
         chart(name, show);
     });
-
+    balboa.client.scriptlets();
     $("#data-container").hide();
 });
     </script>
@@ -251,16 +268,19 @@ $(function() {
     <div id="container">
     <div id="form">
         <form id="q">
-            <input id="entity" placeholder="Metric Entity ID" />
             <select id="query-type">
                 <option value="get">Single Summary Period</option>
                 <option value="series">Series Over Time</option>
                 <option value="range">Explicit Range</option>
+                <option value="scriptlet">Scriptlet</option>
             </select>
 
             <div id="active">
                 <div id="query-get" class="query">
                     <h3>Single Summary Period Query</h3>
+                    <label for="get-entity">Entity ID</label>
+                    <input id="get-entity" placeholder="Metric Entity ID" />
+                    <br/>
                     <label for="get-date">Range that includes</label>
                     <input id="get-date" type="text" class="date" />
 
@@ -276,6 +296,10 @@ $(function() {
 
                 <div id="query-series" class="query">
                     <h3>Series Over Time Query</h3>
+                    <label for="series-entity">Entity ID</label>
+                    <input id="series-entity" placeholder="Metric Entity ID" />
+                    <br/>
+
                     <label for="series-start">Start date</label>
                     <input id="series-start" type="text" class="date" />
 
@@ -293,11 +317,32 @@ $(function() {
 
                 <div id="query-range" class="query">
                     <h3>Explicit Range</h3>
+                    <label for="range-entity">Entity ID</label>
+                    <input id="range-entity" placeholder="Metric Entity ID" />
+                    <br/>
+
                     <label for="range-start">Start date</label>
                     <input id="range-start" type="text" class="date" />
 
                     <label for="range-end">End date</label>
                     <input id="range-end" type="text" class="date" />
+                </div>
+
+                <div id="query-scriptlet" class="query">
+                    <h3>Run Scriptlet</h3>
+
+                    <select id="scriptlet-name" class="summary-type">
+                    </select>
+
+                    <h3>Optional Parameters:</h3>
+                    <label for="scriptlet-entity">Entity ID</label>
+                    <input id="scriptlet-entity" placeholder="Metric Entity ID (Optional)" />
+
+                    <label for="scriptlet-start">Start date</label>
+                    <input id="scriptlet-start" type="text" class="date" value="2000-01-01" />
+
+                    <label for="scriptlet-end">End date</label>
+                    <input id="scriptlet-end" type="text" class="date" value="2014-01-01" />
                 </div>
             </div>
 

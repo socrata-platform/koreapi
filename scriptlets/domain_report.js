@@ -9,9 +9,15 @@ if (start == null || end == null) {
 meta.content_type = "application/csv"
 var uniqueMetricNames = {};
 var metrics = [];
+var uniqueDomainIds = {}
 for (var domainName in domains) {
     var domainId = domains[domainName];
-    meta.log("Working on domain " + domainName)
+    if (uniqueDomainIds[domainId]) {
+        meta.log("Already processed domain " + domainName);
+        continue
+    }
+    uniqueDomainIds[domainId] = ""
+    meta.log("Working on domain " + domainName);
     var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
     for (var i = 0; i < domainMetrics.length; i++) {
         var s = new Date(0); s.setUTCSeconds(parseInt(domainMetrics[i]["start"]) / 1000);

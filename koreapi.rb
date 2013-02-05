@@ -51,6 +51,7 @@ class Metrics
     puts "requesting -> #{url}"
     request = Net::HTTP::Get.new(url)
     result = service.request(request)
+    puts "  -> done"
     return result.body
   end
 

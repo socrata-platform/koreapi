@@ -12,7 +12,7 @@ var metrics = [];
 var uniqueDomainIds = {}
 for (var domainName in domains) {
     var domainId = domains[domainName];
-    if (uniqueDomainIds[domainId]) {
+    if (uniqueDomainIds[domainId] != null) {
         scriptlet.log("Already processed domain " + domainName);
         continue
     }

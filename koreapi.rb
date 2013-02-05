@@ -39,8 +39,8 @@ class Metrics
 
   private
 
-  BALBOA = "util09.sea1.socrata.com"
-  PORT = 2012
+  BALBOA = "lb-vip.sea1.socrata.com"
+  PORT = 9898
 
   def __query(url)
     puts "requesting -> #{url}"

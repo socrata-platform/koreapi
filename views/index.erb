@@ -57,10 +57,11 @@
         td { white-space: nowrap; overflow: hide;}
         .pair { font-family: monospace; position: relative;} 
     </style>
-    <link rel="stylesheet" href="jquery.ui.css" />
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.1.0.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="tablesorter.min.js"></script>
     <script type="text/javascript" src="highcharts.src.js"></script>
     <script type="text/javascript" src="charting.js"></script>
     <script type="text/javascript">
@@ -94,7 +95,7 @@ balboa.client = {
     }
 };
 
-var renderObject = function($table, data) { 
+var renderObject = function($table, data) {
     if (data instanceof Array)
     {
         for (var i=0; i < data.length; i++)
@@ -102,10 +103,10 @@ var renderObject = function($table, data) {
             var metric = data[i];
             $table.append(
                 '<tr class="pair" id="' + metric + '">' +
-                '<td class="metric">' + metric + 
+                '<td class="metric">' + metric +
                 '</td><td class="value"><input class="metric" type="checkbox" id="chart-' + metric + '"></td></tr>'
             );
-            metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {}); 
+            metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {});
         }
         $("#chart").parent().show();
     }
@@ -117,8 +118,8 @@ var renderObject = function($table, data) {
             {
                 $table.append(
                     '<tr class="pair" id="' + metric + '">' +
-                    '<td class="metric">' + metric + ' (' + data[metric]["type"] + ')' +  
-                    '</td><td class="value">' + data[metric]["value"] + 
+                    '<td class="metric">' + metric + ' (' + data[metric]["type"] + ')' +
+                    '</td><td class="value">' + data[metric]["value"] +
                     '</td></tr>'
                 );
             }
@@ -145,7 +146,7 @@ var uniques = function(series) {
     {
         keys.push(k);
     }
-    return keys; 
+    return keys;
 };
 
 var success = function(data) {
@@ -158,7 +159,7 @@ var success = function(data) {
     if (current instanceof Array)
     {
         $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Chart</th></tr></table>');
-        renderObject($("#data .metrics-object:first"), uniques(current)); 
+        renderObject($("#data .metrics-object:first"), uniques(current));
     }
     else
     {
@@ -213,7 +214,7 @@ var chart = function(name, show) {
 };
 
 $(function() {
-    $("#q").submit(function() { 
+    $("#q").submit(function() {
         var type = $("#query-type").val();
 
         if (type == "get")
@@ -258,15 +259,40 @@ $(function() {
         var name = $(this).attr("id").replace("chart-", "");
         chart(name, show);
     });
+
     balboa.client.scriptlets();
+    $( "#tabs" ).tabs();
+
     $("#data-container").hide();
 });
     </script>
 </head>
 
 <body>
-    <div id="container">
-    <div id="form">
+<div id="tabs">
+    <ul>
+        <li><a href="#summary"><span>Summary</span></a></li>
+        <li><a href="#series"><span>Two</span></a></li>
+        <li><a href="#range"><span>Three</span></a></li>
+        <li><a href="#scriptlet"><span>Scriptlet</span></a></li>
+
+    </ul>
+    <div id="fragment-1">
+        <p>First tab is active by default:</p>
+        <pre><code>$( "#tabs" ).tabs(); </code></pre>
+    </div>
+    <div id="fragment-2">
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+    </div>
+    <div id="fragment-3">
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+    </div>
+</div>
+<div id="container">
+        <div id="form">
         <form id="q">
             <select id="query-type">
                 <option value="get">Single Summary Period</option>

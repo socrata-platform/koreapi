@@ -9,6 +9,9 @@ class Hash
 end
 
 class Metrics
+  def initialize
+    @service = Net::HTTP.new(BALBOA, PORT)
+  end
 
   def get(entity, date, type)
     return __get(entity, {"date" => date, "type" => type})
@@ -39,16 +42,10 @@ class Metrics
   BALBOA = "util09.sea1.socrata.com"
   PORT = 2012
 
-  def age(file)
-    age = Time.now - File.mtime(file)
-    (age / 24*60*60).to_i
-  end
-
   def __query(url)
-    service = Net::HTTP.new(BALBOA, PORT)
     puts "requesting -> #{url}"
     request = Net::HTTP::Get.new(url)
-    result = service.request(request)
+    result = @service.request(request)
     puts "  -> done"
     return result.body
   end
@@ -58,6 +55,7 @@ end
 
 class ScriptMetaData
   attr_accessor :content_type
+  attr_accessor :filename
   attr_accessor :errors
 
   def log(string)
@@ -139,6 +137,7 @@ class KoreaPI < Sinatra::Base
     end
 
     content_type ( metaData.content_type || "applicaton/json" )
+    attachment (metaData.filename || params["name"])
     out
   end
 

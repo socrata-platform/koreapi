@@ -11,6 +11,8 @@ end
 class Metrics
   def initialize
     @service = Net::HTTP.new(BALBOA, PORT)
+    @service.open_timeout=10000
+    @service.read_timeout=30
   end
 
   def get(entity, date, type)

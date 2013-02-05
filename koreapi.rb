@@ -39,6 +39,11 @@ class Metrics
   BALBOA = "lb-vip.sea1.socrata.com"
   PORT = 9898
 
+  def age(file)
+    age = Time.now - File.mtime(file)
+    (age / 24*60*60).to_i
+  end
+
   def __query(url)
     service = Net::HTTP.new(BALBOA, PORT)
     service.read_timeout = 120000
@@ -55,6 +60,12 @@ end
 class ScriptMetaData
   attr_accessor :content_type
   attr_accessor :errors
+
+  def log(string)
+    puts(string)
+  end
+
+
 end
 
 require 'sinatra/base'
@@ -123,7 +134,6 @@ class KoreaPI < Sinatra::Base
     cxt['domains'] = @domains || {}
 
     out = cxt.load(@scriptlets[params["name"]]).to_s
-
     if !metaData.errors.nil?
       content_type ( metaData.content_type || "text/html" )
       return metaData.errors

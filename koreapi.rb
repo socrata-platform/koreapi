@@ -36,8 +36,8 @@ class Metrics
 
   private
 
-  BALBOA = "lb-vip.sea1.socrata.com"
-  PORT = 9898
+  BALBOA = "util09.sea1.socrata.com"
+  PORT = 2012
 
   def age(file)
     age = Time.now - File.mtime(file)
@@ -46,8 +46,6 @@ class Metrics
 
   def __query(url)
     service = Net::HTTP.new(BALBOA, PORT)
-    service.read_timeout = 120000
-    service.open_timeout = 120000
     puts "requesting -> #{url}"
     request = Net::HTTP::Get.new(url)
     result = service.request(request)

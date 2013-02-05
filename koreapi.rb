@@ -123,7 +123,7 @@ class KoreaPI < Sinatra::Base
     cxt = V8::Context.new
     metaData = ScriptMetaData.new
     cxt['m'] = Metrics.new
-    cxt['meta'] = metaData
+    cxt['scriptlet'] = metaData
     cxt['start'] = params["start"]
     cxt['end'] = params["end"]
     cxt['entity'] = params["entity"]

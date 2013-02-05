@@ -14,28 +14,23 @@
             margin: 0; 
             padding: 0; 
         }  
-        #q { font-size: 0.8em; }
-        #container { 
-            background-color: #eee; 
-            border-bottom-left-radius: 0.5em 0.5em; 
-            border-bottom-right-radius: 0.5em 0.5em; 
-            border-top-left-radius: 0.5em 0.5em; 
-            border-top-right-radius: 0.5em 0.5em; 
-            color: #333; 
+        #container {
+            font-size: 0.8em;
+            color: #333;
             line-height: 150%; 
-            margin: 100px auto 0; 
             margin-bottom: 50px;
-            width: 600px; 
-            padding: 1em;
+            float: left;
+            width: 400px;
             overflow: visible;
         }
-
+        #data-container {
+            float: right;
+        }
         .center-radius
-        { 
-            width:800px;
+        {
+            font-size: 0.8em;
             height:300px;
             overflow-y:auto;
-            margin: 1em auto; 
             position: relative;
             top: 0; 
             left: -20%;
@@ -214,28 +209,30 @@ var chart = function(name, show) {
 };
 
 $(function() {
-    $("#q").submit(function() {
-        var type = $("#query-type").val();
-
-        if (type == "get")
-        {
-            balboa.client.get($("#get-entity").val(), $("#get-date").val(), $("#get-summary-type").val(), success);
-        }
-        else if (type == "series")
-        {
-            balboa.client.series($("#series-entity").val(), $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
-        }
-        else if (type == "range")
-        {
-            balboa.client.range($("#range-entity").val(), $("#range-start").val(), $("#range-end").val(), success);
-        }
-        else if (type == "scriptlet")
-        {
-            balboa.client.scriptlet($("#scriptlet-name").val(), $("#scriptlet-entity").val(), $("#scriptlet-start").val(), $("#scriptlet-end").val(), $("#scriptlet-summary-type").val(), success);
-        }
-
+    $("#summary-form").submit(function() {
+        balboa.client.get($("#get-entity").val(), $("#get-date").val(), $("#get-summary-type").val(), success);
         return false;
+        });
+
+
+    $("#series-form").submit(function() {
+        balboa.client.series($("#series-entity").val(), $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
+      return false;
+
     });
+
+    $("#range-form").submit(function() {
+        balboa.client.range($("#range-entity").val(), $("#range-start").val(), $("#range-end").val(), success);
+      return false;
+
+    });
+
+    $("#scriptlet-form").submit(function() {
+        balboa.client.scriptlet($("#scriptlet-name").val(), $("#scriptlet-entity").val(), $("#scriptlet-start").val(), $("#scriptlet-end").val(), $("#scriptlet-summary-type").val(), success);
+      return false;
+
+    });
+
     $(".query").hide();
     $("#query-get").show();
     $(".date").datepicker({dateFormat: "yy-mm-dd"});
@@ -261,7 +258,7 @@ $(function() {
     });
 
     balboa.client.scriptlets();
-    $( "#tabs" ).tabs();
+    $( "#container" ).tabs();
 
     $("#data-container").hide();
 });
@@ -269,126 +266,116 @@ $(function() {
 </head>
 
 <body>
-<div id="tabs">
+<div>
+<div id="container">
     <ul>
         <li><a href="#summary"><span>Summary</span></a></li>
-        <li><a href="#series"><span>Two</span></a></li>
-        <li><a href="#range"><span>Three</span></a></li>
+        <li><a href="#series"><span>Series</span></a></li>
+        <li><a href="#range"><span>Range</span></a></li>
         <li><a href="#scriptlet"><span>Scriptlet</span></a></li>
-
     </ul>
-    <div id="fragment-1">
-        <p>First tab is active by default:</p>
-        <pre><code>$( "#tabs" ).tabs(); </code></pre>
-    </div>
-    <div id="fragment-2">
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-    </div>
-    <div id="fragment-3">
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
-    </div>
-</div>
-<div id="container">
-        <div id="form">
-        <form id="q">
-            <select id="query-type">
-                <option value="get">Single Summary Period</option>
-                <option value="series">Series Over Time</option>
-                <option value="range">Explicit Range</option>
-                <option value="scriptlet">Scriptlet</option>
+    <div id="summary">
+        <form id="summary-form">
+            <input type="hidden" name="query-type" value="get"/>
+            <h3>Single Summary Period Query</h3>
+            <label for="get-entity">Entity ID</label>
+            <input id="get-entity" placeholder="Metric Entity ID" />
+            <br/>
+            <label for="get-date">Range that includes</label>
+            <input id="get-date" type="text" class="date" />
+            <br/>
+            <label for="get-summary-type">Summary period</label>
+            <select id="get-summary-type" class="summary-type">
+                <option value="HOURLY">Hourly</option>
+                <option value="DAILY">Daily</option>
+                <option value="WEEKLY">Weekly</option>
+                <option value="MONTHLY">Monthly</option>
+                <option value="YEARLY">Yearly</option>
             </select>
-
-            <div id="active">
-                <div id="query-get" class="query">
-                    <h3>Single Summary Period Query</h3>
-                    <label for="get-entity">Entity ID</label>
-                    <input id="get-entity" placeholder="Metric Entity ID" />
-                    <br/>
-                    <label for="get-date">Range that includes</label>
-                    <input id="get-date" type="text" class="date" />
-
-                    <label for="get-summary-type">Summary period</label>
-                    <select id="get-summary-type" class="summary-type">
-                        <option value="HOURLY">Hourly</option>
-                        <option value="DAILY">Daily</option>
-                        <option value="WEEKLY">Weekly</option>
-                        <option value="MONTHLY">Monthly</option>
-                        <option value="YEARLY">Yearly</option>
-                    </select>
-                </div>
-
-                <div id="query-series" class="query">
-                    <h3>Series Over Time Query</h3>
-                    <label for="series-entity">Entity ID</label>
-                    <input id="series-entity" placeholder="Metric Entity ID" />
-                    <br/>
-
-                    <label for="series-start">Start date</label>
-                    <input id="series-start" type="text" class="date" />
-
-                    <label for="series-end">End date</label>
-                    <input id="series-end" type="text" class="date" />
-
-                    <label for="series-summary-type">Summary period</label>
-                    <select id="series-summary-type" class="summary-type">
-                        <option value="HOURLY">Hourly</option>
-                        <option value="DAILY">Daily</option>
-                        <option value="WEEKLY">Weekly</option>
-                        <option value="MONTHLY">Monthly</option>
-                    </select>
-                </div>
-
-                <div id="query-range" class="query">
-                    <h3>Explicit Range</h3>
-                    <label for="range-entity">Entity ID</label>
-                    <input id="range-entity" placeholder="Metric Entity ID" />
-                    <br/>
-
-                    <label for="range-start">Start date</label>
-                    <input id="range-start" type="text" class="date" />
-
-                    <label for="range-end">End date</label>
-                    <input id="range-end" type="text" class="date" />
-                </div>
-
-                <div id="query-scriptlet" class="query">
-                    <h3>Run Scriptlet</h3>
-
-                    <select id="scriptlet-name" class="summary-type">
-                    </select>
-
-                    <h3>Optional Parameters:</h3>
-                    <label for="scriptlet-entity">Entity ID</label>
-                    <input id="scriptlet-entity" placeholder="Metric Entity ID (Optional)" />
-
-                    <label for="scriptlet-start">Start date</label>
-                    <input id="scriptlet-start" type="text" class="date" value="2000-01-01" />
-
-                    <label for="scriptlet-end">End date</label>
-                    <input id="scriptlet-end" type="text" class="date" value="2014-01-01" />
-                </div>
-            </div>
-
-            <input name="submit" type="submit" value="Gimme metrics!"/>
+            <br/>
+            <input type="submit" name="submit" value="Submit"/>
         </form>
     </div>
 
-    <div id="data-container">
-        <div class="center-radius"> 
-            <form id="search">
-                <input id="filter" name="search" type="search" autocomplete="off" placeholder="Filter results">
-            </form>
-            <div id="data"> </div>
+    <div id="series">
+        <form id="series-form">
+            <input type="hidden" name="query-type" value="series"/>
+            <h3>Series Over Time Query</h3>
+            <label for="series-entity">Entity ID</label>
+            <input id="series-entity" placeholder="Metric Entity ID" />
+            <br/>
+
+            <label for="series-start">Start date</label>
+            <input id="series-start" type="text" class="date" />
+            <br/>
+            <label for="series-end">End date</label>
+            <input id="series-end" type="text" class="date" />
+            <br/>
+            <label for="series-summary-type">Summary period</label>
+            <select id="series-summary-type" class="summary-type">
+                <option value="HOURLY">Hourly</option>
+                <option value="DAILY">Daily</option>
+                <option value="WEEKLY">Weekly</option>
+                <option value="MONTHLY">Monthly</option>
+            </select>
+            <br/>
+            <input type="submit" name="submit" value="Submit"/>
+        </form>
+    </div>
+    <div id="range">
+        <form id="range-form">
+            <input type="hidden" name="query-type" value="range"/>
+
+            <h3>Explicit Range</h3>
+            <label for="range-entity">Entity ID</label>
+            <input id="range-entity" placeholder="Metric Entity ID" />
+            <br/>
+
+            <label for="range-start">Start date</label>
+            <input id="range-start" type="text" class="date" />
+            <br/>
+            <label for="range-end">End date</label>
+            <input id="range-end" type="text" class="date" />
+            <br/>
+            <input type="submit" name="submit" value="Submit"/>
+        </form>
+    </div>
+    <div id="scriptlet">
+        <form id="scriptlet-form">
+            <input type="hidden" name="query-type" value="scriptlet"/>
+
+            <h3>Run Scriptlet</h3>
+
+            <select id="scriptlet-name" class="summary-type">
+            </select>
+
+            <h3>Optional Parameters:</h3>
+            <label for="scriptlet-entity">Entity ID</label>
+            <input id="scriptlet-entity" placeholder="Metric Entity ID (Optional)" />
+            <br/>
+            <label for="scriptlet-start">Start date</label>
+            <input id="scriptlet-start" type="text" class="date" value="2000-01-01" />
+            <br/>
+            <label for="scriptlet-end">End date</label>
+            <input id="scriptlet-end" type="text" class="date" value="2014-01-01" />
+            <br/>
+            <input type="submit" name="submit" value="Submit"/>
+        </form>
+    </div>
         </div>
-        <div class="center-radius">
-            <div id="chart"></div>
-        </div>
+
+<div id="data-container">
+    <div class="center-radius">
+        <form id="search">
+            <input id="filter" name="search" type="search" autocomplete="off" placeholder="Filter results">
+        </form>
+        <div id="data"> </div>
+    </div>
+    <div class="center-radius">
+        <div id="chart"></div>
     </div>
 </div>
-
+</div>
 </body>
 </html>
 

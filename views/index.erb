@@ -24,7 +24,8 @@
             overflow: visible;
         }
         #data-container {
-            float: right;
+            float: left;
+	    margin-left: 200px;
         }
         .center-radius
         {
@@ -102,12 +103,12 @@ var renderObject = function($table, data) {
             );
             metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {});
         }
-        $("#chart").parent().show();
+        $("#chart").show();
     }
     else
     {
         for (var metric in data)
-        {
+        { 
             if (metric.substr(0, 2) != "__")
             {
                 $table.append(
@@ -118,7 +119,7 @@ var renderObject = function($table, data) {
                 );
             }
         }
-        $("#chart").parent().hide();
+        $("#chart").hide();
     }
 
     $table.tablesorter();
@@ -160,7 +161,6 @@ var success = function(data) {
         $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Value</th></tr></table>');
         renderObject($("#data .metrics-object:first"), current);
     }
-
     $("#data-container").show();
 };
 

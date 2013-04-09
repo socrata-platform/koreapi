@@ -55,6 +55,24 @@ class Metrics
 
 end
 
+class Domains
+  CORE = "lb-vip.sea1.socrata.com"
+  CORE_PORT = 8081
+
+  def get_domains()
+    service = Net::HTTP.new(CORE, CORE_PORT)
+    url = "/domains?method=all"
+    request = Net::HTTP::Get.new(url)
+    result = service.request(request)
+    domain_data = JSON.parse(result.body)
+    domains = {}
+    domain_data.each { |d|
+      domains[d['cname']] = d['id']
+    }
+    domains
+  end
+end
+
 class ScriptMetaData
   attr_accessor :content_type
   attr_accessor :filename
@@ -69,14 +87,14 @@ end
 
 require 'sinatra/base'
 class KoreaPI < Sinatra::Base
-  set :public, File.dirname(__FILE__) + '/public'
+  set :public_folder, File.dirname(__FILE__) + '/public_folder'
 
   def initialize()
     super()
     script_path = "scriptlets"
     @scriptlets = {}
     Dir.foreach(script_path) do |f|
-      if f =~ /^\./
+      unless f =~ /\.js$/
         next
       end
       name = f.sub(/.js/, '')
@@ -84,7 +102,8 @@ class KoreaPI < Sinatra::Base
       @scriptlets[name] = path
       puts ("Got " + name + " => " + path)
     end
-    @domains = JSON.parse(IO.read("domains.json"))
+    @domains = Domains.new().get_domains();
+    puts "Loaded domains #{@domains}"
   end
 
   get "/?" do 
@@ -115,8 +134,21 @@ class KoreaPI < Sinatra::Base
     Metrics.new.__series(entity, params)
   end
 
+  get "/domains" do
+    @domains.to_json
+  end
+
   get "/scriptlets" do
     @scriptlets.to_json
+  end
+
+  get "/scriptlets/:name/info" do
+    metaData = ScriptMetaData.new
+    cxt = V8::Context.new
+    cxt['scriptlet'] = metaData
+    cxt.load(@scriptlets[params["name"]])
+    out = cxt.eval('info()')
+    out
   end
 
   get "/scriptlet/:name" do
@@ -126,13 +158,19 @@ class KoreaPI < Sinatra::Base
     metaData = ScriptMetaData.new
     cxt['m'] = Metrics.new
     cxt['scriptlet'] = metaData
-    cxt['start'] = params["start"]
-    cxt['end'] = params["end"]
-    cxt['entity'] = params["entity"]
-    cxt['period'] = params["period"]
     cxt['domains'] = @domains || {}
 
-    out = cxt.load(@scriptlets[params["name"]]).to_s
+    cxt.load(@scriptlets[params["name"]])
+    info = JSON.parse(cxt.eval('info()'))
+    info['params'].each { |p|
+      if p[0] == "domain_id"
+        cxt['domain_id'] = @domains[params[p[0]]]
+      else
+        cxt[p[0]] = params[p[0]]
+      end
+    }
+
+    out = cxt.eval('run()').to_s
     if !metaData.errors.nil?
       content_type ( metaData.content_type || "text/html" )
       return metaData.errors

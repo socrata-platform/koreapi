@@ -1,233 +1,325 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="utf-8" />
-    <title>Korea PI | Metrics</title>
-    <style>
-        body { 
-            background-image: url(bg.jpg);
-            background-position: right top; 
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            background-color: #fff; 
-            font-family: Helvetic, Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-        }  
-        #container {
-            font-size: 0.8em;
-            color: #333;
-            line-height: 150%; 
-            margin-bottom: 50px;
-            float: left;
-            width: 400px;
-            overflow: visible;
-        }
-        #data-container {
-            float: left;
-	    margin-left: 200px;
-        }
-        .center-radius
-        {
-            font-size: 0.8em;
-            overflow-y:auto;
-            position: relative;
-            top: 0; 
-            left: -20%;
-            padding: 1em;
-            background-color: #eee; 
-            border-bottom-left-radius: 0.5em 0.5em; 
-            border-bottom-right-radius: 0.5em 0.5em; 
-            border-top-left-radius: 0.5em 0.5em; 
-            border-top-right-radius: 0.5em 0.5em; 
-        } 
+<meta charset="utf-8"/>
+<title>Korea PI | Metrics</title>
+<style>
+  body {
+    background-image: url(bg.jpg);
+    background-position: right top;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    font-family: Helvetic, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
 
-        #chart { width: 750px; margin: 0 auto; height: 300px;}
+  #container {
+    font-size: 0.8em;
+    color: #333;
+    line-height: 150%;
+    margin-bottom: 50px;
+    float: left;
+    width: 400px;
+    overflow: visible;
+  }
 
-        thead th { cursor: pointer; } 
-        table.metrics-object { width: 750px; } 
-        table.metrics-object th { text-align: left; }
-        col#metric { width: 650px; }
-        col#value { width: 100px; }
-        td { white-space: nowrap; overflow: hide;}
-        .pair { font-family: monospace; position: relative;} 
-    </style>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/jquery-migrate-1.1.0.min.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="tablesorter.min.js"></script>
-    <script type="text/javascript" src="highcharts.src.js"></script>
-    <script type="text/javascript" src="charting.js"></script>
-    <script type="text/javascript">
-balboa = {};
+  #data-container {
+    float: left;
+    margin-left: 200px;
+  }
 
-balboa.client = {
-    __range:  function(entityId, data, success, error) {
-        $.ajax({url: "q/" + entityId + "/range", data: data, cache: false, success: success, error: error});
+  .center-radius {
+    font-size: 0.8em;
+    overflow-y: auto;
+    position: relative;
+    top: 0;
+    left: -20%;
+    padding: 1em;
+    background-color: #eee;
+    border-bottom-left-radius: 0.5em 0.5em;
+    border-bottom-right-radius: 0.5em 0.5em;
+    border-top-left-radius: 0.5em 0.5em;
+    border-top-right-radius: 0.5em 0.5em;
+  }
+
+  #chart {
+    width: 750px;
+    margin: 0 auto;
+    height: 300px;
+  }
+
+  thead th {
+    cursor: pointer;
+  }
+
+  table.metrics-object {
+    width: 750px;
+  }
+
+  table.metrics-object th {
+    text-align: left;
+  }
+
+  col#metric {
+    width: 650px;
+  }
+
+  col#value {
+    width: 100px;
+  }
+
+  td {
+    white-space: nowrap;
+    overflow: hide;
+  }
+
+  .pair {
+    font-family: monospace;
+    position: relative;
+  }
+
+  label, input[type="text"]{
+    float:left;
+    display:block;
+    text-transform:capitalize;
+  }
+  label
+  {
+    margin-right: 5px;
+  }
+
+</style>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.1.0.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/jquery-ui.min.js"></script>
+<script type="text/javascript" src="tablesorter.min.js"></script>
+<script type="text/javascript" src="highcharts.src.js"></script>
+<script type="text/javascript" src="charting.js"></script>
+<script type="text/javascript">
+  balboa = {};
+
+  balboa.client = {
+    __range: function (entityId, data, success, error) {
+      $.ajax({url: "q/" + entityId + "/range", data: data, cache: false, success: success, error: error});
     },
-    __series:  function(entityId, data, success, error) {
-        $.ajax({url: "q/" + entityId + "/series", data: data, cache: false, success: success, error: error});
+    __series: function (entityId, data, success, error) {
+      $.ajax({url: "q/" + entityId + "/series", data: data, cache: false, success: success, error: error});
     },
-    __get:  function(entityId, data, success, error) {
-        $.ajax({url: "q/" + entityId, data: data, cache: false, success: success, error: error});
+    __get: function (entityId, data, success, error) {
+      $.ajax({url: "q/" + entityId, data: data, cache: false, success: success, error: error});
     },
 
-    get: function(entityId, date, period, success, error) {
-        balboa.client.__get(entityId, {period: period, date: date}, success, error);
+    get: function (entityId, date, period, success, error) {
+      balboa.client.__get(entityId, {period: period, date: date}, success, error);
     },
-    series: function(entityId, start, end, period, success, error) {
-        balboa.client.__series(entityId, {period: period, start: start, end: end}, success, error);
+    series: function (entityId, start, end, period, success, error) {
+      balboa.client.__series(entityId, {period: period, start: start, end: end}, success, error);
     },
-    range: function(entityId, start, end, success, error) {
-        balboa.client.__range(entityId, {start: start, end: end}, success, error);
+    range: function (entityId, start, end, success, error) {
+      balboa.client.__range(entityId, {start: start, end: end}, success, error);
     },
-    scriptlets: function() {
+    scriptlets: function () {
       $.ajax({url: "/scriptlets", success: load_scripts, error: error});
     },
-    scriptlet: function(name, entityId, start, end, period, success, error) {
-      window.open("/scriptlet/"+name + "?entity=" +entityId + "&period=" + period + "&start=" + start + "&end=" + end)
+    scriptlet_info: function (name) {
+      $.ajax({url: "/scriptlets/" + name + "/info", success: load_script_params, error: error});
+    },
+    domains: function() {
+      $.ajax({url: "/domains", success: load_domains, error: error});
     }
-};
+  };
 
-var renderObject = function($table, data) {
-    if (data instanceof Array)
-    {
-        for (var i=0; i < data.length; i++)
-        {
-            var metric = data[i];
-            $table.append(
-                '<tr class="pair" id="' + metric + '">' +
+  var renderObject = function ($table, data) {
+    if (data instanceof Array) {
+      for (var i = 0; i < data.length; i++) {
+        var metric = data[i];
+        $table.append(
+            '<tr class="pair" id="' + metric + '">' +
                 '<td class="metric">' + metric +
                 '</td><td class="value"><input class="metric" type="checkbox" id="chart-' + metric + '"></td></tr>'
-            );
-            metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {});
-        }
-        $("#chart").show();
+        );
+        metricsNS.renderMetricsChart(data, $("#chart"), $("#series-summary-type").val(), [], {});
+      }
+      $("#chart").show();
     }
-    else
-    {
-        for (var metric in data)
-        { 
-            if (metric.substr(0, 2) != "__")
-            {
-                $table.append(
-                    '<tr class="pair" id="' + metric + '">' +
-                    '<td class="metric">' + metric + ' (' + data[metric]["type"] + ')' +
-                    '</td><td class="value">' + data[metric]["value"] +
-                    '</td></tr>'
-                );
-            }
+    else {
+      for (var metric in data) {
+        if (metric.substr(0, 2) != "__") {
+          $table.append(
+              '<tr class="pair" id="' + metric + '">' +
+                  '<td class="metric">' + metric + ' (' + data[metric]["type"] + ')' +
+                  '</td><td class="value">' + data[metric]["value"] +
+                  '</td></tr>'
+          );
         }
-        $("#chart").hide();
+      }
+      $("#chart").hide();
     }
 
     $table.tablesorter();
-}
+  };
 
-var uniques = function(series) {
+  var uniques = function (series) {
     var union = {};
-    for (var i=0; i < series.length; i++)
-    {
-        var slice = series[i];
-        for (var m in slice.metrics)
-        {
-            union[m] = null;
-        }
+    for (var i = 0; i < series.length; i++) {
+      var slice = series[i];
+      for (var m in slice.metrics) {
+        union[m] = null;
+      }
     }
 
     var keys = [];
-    for (var k in union)
-    {
-        keys.push(k);
+    for (var k in union) {
+      keys.push(k);
     }
     return keys;
-};
+  };
 
-var success = function(data) {
+  var success = function (data) {
     var current = $.parseJSON(data);
 
     $("#data-container").show();
 
     $("#data").data("metrics", current);
 
-    if (current instanceof Array)
-    {
-        $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Chart</th></tr></table>');
-        renderObject($("#data .metrics-object:first"), uniques(current));
+    if (current instanceof Array) {
+      $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Chart</th></tr></table>');
+      renderObject($("#data .metrics-object:first"), uniques(current));
     }
-    else
-    {
-        $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Value</th></tr></table>');
-        renderObject($("#data .metrics-object:first"), current);
+    else {
+      $("#data").html('<table class="metrics-object"><colgroup><col id="metric" /><col id="value" /></colgroup><thead><tr><th>Metric</th><th>Value</th></tr></table>');
+      renderObject($("#data .metrics-object:first"), current);
     }
     $("#data-container").show();
-};
+  };
 
-var load_scripts = function(data) {
-  var current = $.parseJSON(data);
-  var options = ""
-  for ( var script in current ) {
-    $("#scriptlet-name").append($('<option>').text(script).attr('value', script));
-  }
-};
+  var load_scripts = function (data) {
+    var current = $.parseJSON(data);
+    var options = ""
+    for (var script in current) {
+      $("#scriptlet-name").append($('<option>').text(script).attr('value', script));
+    }
+    get_scriptlet_info();
+  };
 
-var error = function() {
-    // TODO
-};
+  var get_scriptlet_info = function()
+  {
+    balboa.client.scriptlet_info($("#scriptlet-name").val());
+    $("#scriptlet-form").attr("action", "/scriptlet/" + $("#scriptlet-name").val());
+  };
 
-var filter = function(phrase) {
-    $("#data td.metric").each(function() {
-        if ($(this).html().match(phrase))
-        {
-            $(this).closest("tr").show();
-        }
-        else
-        {
-            $(this).closest("tr").hide();
-        }
+  var load_script_params = function (data) {
+    $('#scriptlet-description').empty();
+    $('#scriptlet-title').empty();
+    $('#scriptlet-params').empty();
+    var info = $.parseJSON(data);
+    $('#scriptlet-description').append(info['description']);
+    $('#scriptlet-title').append(info['name']);
+    var params = info['params'];
+    Object.keys(params).forEach(function (key) {
+      var se = "scriptlet-entity_" + key;
+      var label = key.replace("_", " ");
+      var clazz = params[key]['class'];
+      var val = params[key]['default'];
+      $('#scriptlet-params').append("<label name="+ key + " for=" + se + ">" + label + "</label>");
+      if (clazz == "summary-type") {
+        $('#scriptlet-params').append("<select name="+ key + " id=" + se + " class=summary-type /></br>");
+      } else if (clazz == "domain_id") {
+        $('#scriptlet-params').append("<input name="+ key + " id=" + se + " class=text value=\"" + val + "\"/></br>");
+        $("#" + se).autocomplete({
+          source: autocomplete
+        });
+      } else {
+        $('#scriptlet-params').append("<input name="+ key + " id=" + se + " class=" + clazz + " value=\"" + val + "\"/></br>");
+      }
     });
-};
+    $(".date").datepicker({dateFormat: "yy-mm-dd"});
+    init_summary();
+    align_fields();
+  }
 
-var chart = function(name, show) {
+  var error = function () {
+    // TODO
+  };
+
+  var filter = function (phrase) {
+    $("#data td.metric").each(function () {
+      if ($(this).html().match(phrase)) {
+        $(this).closest("tr").show();
+      }
+      else {
+        $(this).closest("tr").hide();
+      }
+    });
+  };
+
+  var chart = function (name, show) {
     var chartData = $("#chart").data("highchart");
-    if (show)
-    {
-        if (chartData.get(name) == null)
-        {
-            chartData.addSeries(metricsNS.getSeries(name, $("#data").data("metrics")));
-        }
+    if (show) {
+      if (chartData.get(name) == null) {
+        chartData.addSeries(metricsNS.getSeries(name, $("#data").data("metrics")));
+      }
     }
     else // hide
     {
-        if (chartData.get(name) != null)
-        {
-            chartData.get(name).remove();
-        }
+      if (chartData.get(name) != null) {
+        chartData.get(name).remove();
+      }
     }
-};
+  };
 
-$(function() {
-    $("#summary-form").submit(function() {
-        balboa.client.get($("#get-entity").val(), $("#get-date").val(), $("#get-summary-type").val(), success);
-        return false;
-        });
+  var align_fields = function() {
+    var max = 0;
+    $("label").each(function(){
+      if ($(this).width() > max)
+        max = $(this).width();
+    });
+    $("label").width(max);
+  };
 
+  var init_summary = function() {
+    $(".summary-type").empty();
+    $(".summary-type").append("<option value=HOURLY>Hourly</option>");
+    $(".summary-type").append("<option value=DAILY>Daily</option>");
+    $(".summary-type").append("<option value=WEEKLY>Weekly</option>");
+    $(".summary-type").append("<option value=MONTHLY>Monthly</option>");
+    $(".summary-type").append("<option value=YEARLY>Yearly</option>");
+  };
 
-    $("#series-form").submit(function() {
-        balboa.client.series($("#series-entity").val(), $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
+  domain_map = {};
+  var suggested_entities = ["applications"];
+  var autocomplete = []
+  var load_domains = function(data) {
+    domain_map = $.parseJSON(data);
+    autocomplete = suggested_entities.concat(Object.keys(domain_map));
+    $('#series-entity').autocomplete({
+      source: autocomplete
+    });
+    $('#range-entity').autocomplete({
+      source: autocomplete
+    });
+  };
+
+  var resolve_domain_id = function (input) {
+    if (domain_map[input] !== undefined) {
+      return domain_map[input]
+    }
+    input
+  }
+
+  $(function () {
+
+    $("#series-form").submit(function () {
+      balboa.client.series(resolve_domain_id($("#series-entity").val()), $("#series-start").val(), $("#series-end").val(), $("#series-summary-type").val(), success);
       return false;
 
     });
 
-    $("#range-form").submit(function() {
-        balboa.client.range($("#range-entity").val(), $("#range-start").val(), $("#range-end").val(), success);
-      return false;
-
-    });
-
-    $("#scriptlet-form").submit(function() {
-        balboa.client.scriptlet($("#scriptlet-name").val(), $("#scriptlet-entity").val(), $("#scriptlet-start").val(), $("#scriptlet-end").val(), $("#scriptlet-summary-type").val(), success);
+    $("#range-form").submit(function () {
+      balboa.client.range(resolve_domain_id($("#range-entity").val()), $("#range-start").val(), $("#range-end").val(), success);
       return false;
 
     });
@@ -235,143 +327,112 @@ $(function() {
     $(".query").hide();
     $("#query-get").show();
     $(".date").datepicker({dateFormat: "yy-mm-dd"});
+    init_summary();
 
-    $("#query-type").change(function() {
-        $(".query").hide();
-        $("#data-container").hide();
-        $("#query-" + $(this).val()).show();
+    $("#query-type").change(function () {
+      $(".query").hide();
+      $("#data-container").hide();
+      $("#query-" + $(this).val()).show();
     });
 
-    $("#filter").click(function() {
-        filter($(this).val());
+    $("#filter").click(function () {
+      filter($(this).val());
     });
 
-    $("#filter").keypress(function() {
-        filter($(this).val());
+    $("#filter").keypress(function () {
+      filter($(this).val());
     });
 
-    $(".value input").live("change", function() {
-        var show = $(this).is(":checked");
-        var name = $(this).attr("id").replace("chart-", "");
-        chart(name, show);
+    $(".value input").live("change", function () {
+      var show = $(this).is(":checked");
+      var name = $(this).attr("id").replace("chart-", "");
+      chart(name, show);
     });
 
     balboa.client.scriptlets();
-    $( "#container" ).tabs();
+    $("#container").tabs();
 
     $("#data-container").hide();
-});
-    </script>
+
+    balboa.client.domains();
+    align_fields();
+  });
+</script>
 </head>
 
 <body>
 <div>
-<div id="container">
-    <ul>
-        <li><a href="#summary"><span>Summary</span></a></li>
-        <li><a href="#series"><span>Series</span></a></li>
-        <li><a href="#range"><span>Range</span></a></li>
-        <li><a href="#scriptlet"><span>Scriptlet</span></a></li>
-    </ul>
-    <div id="summary">
-        <form id="summary-form">
-            <input type="hidden" name="query-type" value="get"/>
-            <h3>Single Summary Period Query</h3>
-            <label for="get-entity">Entity ID</label>
-            <input id="get-entity" placeholder="Metric Entity ID" />
-            <br/>
-            <label for="get-date">Range that includes</label>
-            <input id="get-date" type="text" class="date" />
-            <br/>
-            <label for="get-summary-type">Summary period</label>
-            <select id="get-summary-type" class="summary-type">
-                <option value="HOURLY">Hourly</option>
-                <option value="DAILY">Daily</option>
-                <option value="WEEKLY">Weekly</option>
-                <option value="MONTHLY">Monthly</option>
-                <option value="YEARLY">Yearly</option>
-            </select>
-            <br/>
-            <input type="submit" name="submit" value="Submit"/>
-        </form>
-    </div>
+    <div id="container">
+        <ul>
+            <li><a href="#series"><span>Series</span></a></li>
+            <li><a href="#range"><span>Range</span></a></li>
+            <li><a href="#scriptlet"><span>Scriptlet</span></a></li>
+        </ul>
 
-    <div id="series">
-        <form id="series-form">
-            <input type="hidden" name="query-type" value="series"/>
-            <h3>Series Over Time Query</h3>
-            <label for="series-entity">Entity ID</label>
-            <input id="series-entity" placeholder="Metric Entity ID" />
-            <br/>
+        <div id="series">
+            <form id="series-form">
+                <input type="hidden" name="query-type" value="series"/>
 
-            <label for="series-start">Start date</label>
-            <input id="series-start" type="text" class="date" />
-            <br/>
-            <label for="series-end">End date</label>
-            <input id="series-end" type="text" class="date" />
-            <br/>
-            <label for="series-summary-type">Summary period</label>
-            <select id="series-summary-type" class="summary-type">
-                <option value="HOURLY">Hourly</option>
-                <option value="DAILY">Daily</option>
-                <option value="WEEKLY">Weekly</option>
-                <option value="MONTHLY">Monthly</option>
-            </select>
-            <br/>
-            <input type="submit" name="submit" value="Submit"/>
-        </form>
-    </div>
-    <div id="range">
-        <form id="range-form">
-            <input type="hidden" name="query-type" value="range"/>
+                <h3>Series Over Time Query</h3>
+                <label for="series-entity">Entity ID</label>
+                <input id="series-entity" placeholder="Metric Entity ID"/>
+                <br/>
 
-            <h3>Explicit Range</h3>
-            <label for="range-entity">Entity ID</label>
-            <input id="range-entity" placeholder="Metric Entity ID" />
-            <br/>
-
-            <label for="range-start">Start date</label>
-            <input id="range-start" type="text" class="date" />
-            <br/>
-            <label for="range-end">End date</label>
-            <input id="range-end" type="text" class="date" />
-            <br/>
-            <input type="submit" name="submit" value="Submit"/>
-        </form>
-    </div>
-    <div id="scriptlet">
-        <form id="scriptlet-form">
-            <input type="hidden" name="query-type" value="scriptlet"/>
-
-            <h3>Run Scriptlet</h3>
-
-            <select id="scriptlet-name" class="summary-type">
-            </select>
-
-            <h3>Optional Parameters:</h3>
-            <label for="scriptlet-entity">Entity ID</label>
-            <input id="scriptlet-entity" placeholder="Metric Entity ID (Optional)" />
-            <br/>
-            <label for="scriptlet-start">Start date</label>
-            <input id="scriptlet-start" type="text" class="date" value="2000-01-01" />
-            <br/>
-            <label for="scriptlet-end">End date</label>
-            <input id="scriptlet-end" type="text" class="date" value="2014-01-01" />
-            <br/>
-            <input type="submit" name="submit" value="Submit"/>
-        </form>
-    </div>
+                <label for="series-start">Start Date</label>
+                <input id="series-start" type="text" class="date"/>
+                <br/>
+                <label for="series-end">End Date</label>
+                <input id="series-end" type="text" class="date"/>
+                <br/>
+                <label for="series-summary-type">Summary Period</label>
+                <select id="series-summary-type" class="summary-type"/>
+                <br/>
+                <input type="submit" name="submit" value="Submit"/>
+            </form>
         </div>
+        <div id="range">
+            <form id="range-form">
+                <input type="hidden" name="query-type" value="range"/>
 
-<div id="data-container">
-    <div class="center-radius">
-        <div id="chart"></div>
-        <form id="search">
-            <input id="filter" name="search" type="search" autocomplete="off" placeholder="Filter results">
-        </form>
-        <div id="data"> </div>
+                <h3>Explicit Range</h3>
+                <label for="range-entity">Entity ID</label>
+                <input id="range-entity" placeholder="Metric Entity ID"/>
+                <br/>
+
+                <label for="range-start">Start Date</label>
+                <input id="range-start" type="text" class="date"/>
+                <br/>
+                <label for="range-end">End Date</label>
+                <input id="range-end" type="text" class="date"/>
+                <br/>
+                <input type="submit" name="submit" value="Submit"/>
+            </form>
+        </div>
+        <div id="scriptlet">
+            <form id="scriptlet-form" target="_blank">
+                <input type="hidden" name="query-type" value="scriptlet"/>
+                <label for="scriptlet-name">Select Scriptlet: </label>
+                <select id="scriptlet-name" onchange="get_scriptlet_info()">
+                <br/>
+                </select>
+                <h3 id="scriptlet-title"></h3>
+                <i id="scriptlet-description"></i>
+                <div id="scriptlet-params">
+                </div>
+                <input type="submit" name="submit" value="Submit"/>
+            </form>
+        </div>
     </div>
-</div>
+
+    <div id="data-container">
+        <div class="center-radius">
+            <div id="chart"></div>
+            <form id="search">
+                <input id="filter" name="search" type="search" autocomplete="off" placeholder="Filter results">
+            </form>
+            <div id="data"></div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

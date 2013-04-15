@@ -36,7 +36,7 @@ run = function () {
         }
 
         var metricNames = Object.keys(uniqueMetricNames).sort();
-        var output = "start, end," + metricNames.join(", ") + ", ave_js_load_time\n";
+        var output = "start, end," + metricNames.join(", ") + ", ave_js_load_time, ave_dom_load_time\n";
         for (var row = 0; row < metrics.length; row++) {
             output = output + metrics[row][0] + ",";
             output = output + metrics[row][1] + ",";
@@ -49,10 +49,12 @@ run = function () {
                 }
             }
             render_time = 0;
+	    dom_time = 0;
             if (metrics[row][2]['js-page-load-samples'] && metrics[row][2]['js-page-load-samples']['value'] > 0) {
                 render_time = metrics[row][2]['js-page-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
+                dom_time = metrics[row][2]['js-dom-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
             }
-            output = output + render_time;
+            output = output + render_time + ","  + dom_time;
             output = output + "\n"
 
         }

@@ -51,8 +51,12 @@ run = function () {
             render_time = 0;
 	    dom_time = 0;
             if (metrics[row][2]['js-page-load-samples'] && metrics[row][2]['js-page-load-samples']['value'] > 0) {
-                render_time = metrics[row][2]['js-page-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
-                dom_time = metrics[row][2]['js-dom-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
+		if (metrics[row][2]['js-page-load-time']["value"]) {
+                    render_time = metrics[row][2]['js-page-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
+		}
+		if (metrics[row][2]['js-dom-load-time']["value"]) {
+                    dom_time = metrics[row][2]['js-dom-load-time']["value"] / metrics[row][2]['js-page-load-samples']["value"];
+		}
             }
             output = output + render_time + ","  + dom_time;
             output = output + "\n"

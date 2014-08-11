@@ -6,12 +6,14 @@ info = function () {
     var ret = {}
     ret['name'] = "Applications Report";
     ret['description'] = "Monthly Report of all API token usage over time for all domains";
-    ret['params'] = { start: { class: "date", default: "2009-01-01"}, end: { class: "date", default: "2014-01-01"} };
+    ret['params'] = { start: { class: "date", default: "2009-01-01"},
+                      end: { class: "date", default: "2017-01-01"} };
+    ret['optional_params'] = {};
     scriptlet.content_type = "application/json";
     return JSON.stringify(ret)
 };
 
-run = function () {
+runAndWriteToFile = function () {
     if (start == null || end == null) {
         scriptlet.errors = "This scriptlet requires a start and end date"
     } else {
@@ -36,21 +38,19 @@ run = function () {
         }
 
         var metricNames = Object.keys(uniqueMetricNames).sort();
-        var output = "start, end," + metricNames.join(", ") + "\n";
+        tempFile.write("start, end," + metricNames.join(", ") + "\n");
         for (var row = 0; row < metrics.length; row++) {
-            output = output + metrics[row][0] + ",";
-            output = output + metrics[row][1] + ",";
+            var newRow = metrics[row][0] + "," + metrics[row][1] + ",";
             for (var itr = 0; itr < metricNames.length; itr++) {
                 var metric = metrics[row][2][metricNames[itr]];
                 if (metric) {
-                    output = output + metric["value"] + ","
+                    newRow = newRow + metric["value"] + ","
                 } else {
-                    output = output + ","
+                    newRow = newRow + ","
                 }
             }
-            output = output + "\n"
-
+            newRow = newRow + "\n"
+            tempFile.write(newRow)
         }
-        return output
     }
 };

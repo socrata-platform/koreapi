@@ -7,6 +7,7 @@ info = function () {
     ret['name'] = "Applications Report";
     ret['description'] = "Monthly Report of all API token usage over time for all domains";
     ret['params'] = { start: { class: "date", default: "2009-01-01"}, end: { class: "date", default: "2014-01-01"} };
+    ret['optional_params'] = {};
     scriptlet.content_type = "application/json";
     return JSON.stringify(ret)
 };

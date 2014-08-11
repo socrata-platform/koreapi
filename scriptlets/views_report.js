@@ -6,10 +6,11 @@ info = function () {
     var ret = {};
     ret['name'] = "Dataset Views Report";
     ret['description'] = "Report of all dataset views for a domain";
-    ret['params'] = { domain_id: {class: "domain_id", default: "opendata.socrata.com"},
-	              start: { class: "date", default: "2009-01-01"}, 
-		      end: { class: "date", default: "2014-01-01"},  
-		      period: { class: "summary-type", default: "DAILY"} };
+    ret['params'] = { domain: {class: "domain", default: "opendata.socrata.com"},
+	                    start: { class: "date", default: "2009-01-01"},
+		                  end: { class: "date", default: "2014-01-01"},
+		                  period: { class: "summary-type", default: "DAILY"} };
+    ret['optional_params'] = {};
     scriptlet.content_type = "application/json";
     return JSON.stringify(ret)
 };
@@ -17,7 +18,7 @@ info = function () {
 run = function () {
 
     if (domain_id == null || start == null || end == null, period == null) {
-        scriptlet.errors = "This scriptlet requires a start and end date, period, and domain_id"
+        scriptlet.errors = "This scriptlet requires a start and end date, period, and domain name"
     } else {
 
         scriptlet.content_type = "application/csv"

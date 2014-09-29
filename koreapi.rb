@@ -8,7 +8,7 @@ require_relative 'helpers/param_utils'
 require_relative 'helpers/s3_utils'
 require_relative 'lib/metrics'
 require_relative 'lib/domains'
-require_relative 'lib/Script_metadata'
+require_relative 'lib/script_metadata'
 
 class KoreaPI < Sinatra::Base
   set :public_folder, File.dirname(__FILE__) + '/public_folder'

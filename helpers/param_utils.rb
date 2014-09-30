@@ -37,7 +37,7 @@ module Sinatra
       def load_required_params(cxt, params, info)
         query_params = Hash.new
         params.each { |k, v|
-          if (k != 'splat' && k != 'name' && k != 'captures') # sinatra bits that aren't query params
+          if (k != 'splat' && k != 'name' && k != 'captures' && k != 'query-type' && k != 'submit') # sinatra bits that aren't query params
             query_params[k] = v
           end
         }

@@ -39,7 +39,9 @@ class Metrics
 
   private
 
-  BALBOA = "lb-vip.sea1.socrata.com"
+  # Extract the FQDN for the Balboa load balancer.
+  config = ParseConfig.new('/etc/koreapi.properties')
+  BALBOA = config['metric-config.balboa.server']
   PORT = 9898
 
   def __query(url)

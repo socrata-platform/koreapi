@@ -1,7 +1,9 @@
 require 'net/http'
 
 class Domains
-  CORE = "lb-vip.sea1.socrata.com"
+  # Extract the FQDN for the Core Server load balancer.
+  config = ParseConfig.new('/etc/koreapi.properties')
+  CORE = config['core.server']
   CORE_PORT = 8081
 
   def get_domains()

@@ -1,4 +1,6 @@
 require 'net/http'
+require 'sinatra/base'
+require_relative '../helpers/config_utils'
 
 class Hash
   def to_params
@@ -7,8 +9,11 @@ class Hash
 end
 
 class Metrics
+
+  BALBOA_ADDRESS = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server')
+
   def initialize
-    @service = Net::HTTP.new(BALBOA, PORT)
+    @service = Net::HTTP.new(BALBOA_ADDRESS)
     @service.open_timeout=10000
     @service.read_timeout=30
   end
@@ -39,14 +44,9 @@ class Metrics
 
   private
 
-  # Extract the FQDN for the Balboa load balancer.
-  config = ParseConfig.new('/etc/koreapi.properties')
-  BALBOA = config['metric-config.balboa.server']
-  PORT = 9898
-
   def __query(url)
     puts "requesting -> #{url}"
-    request = Net::HTTP::Get.new(url)
+    request = Net::HTTP::Get.new(BALBOA_ADDRESS)
     result = @service.request(request)
     puts "  -> done"
     return result.body

@@ -13,11 +13,16 @@ module Sinatra
       # -----------------------------------------------------------------------------------------------
       def push_to_s3(bucket, sourceFile, destinationFile)
         config = ParseConfig.new('/etc/koreapi.properties')
+
         AWS.config( access_key_id: config['aws.access_key_id'],
                     secret_access_key: config['aws.secret_access_key'],
-                    region: config['aws.region']
+                    region: config['aws.region'],
                   )
         s3 = AWS::S3.new
+
+        #
+        environment = config['environment']
+
         retries = 3
         begin
           s3.buckets[bucket].objects[destinationFile].write(:file => sourceFile)

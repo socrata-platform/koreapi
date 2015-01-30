@@ -20,6 +20,11 @@ $ gem install bundler
 $ bundle install
 ```
 
+### Dependencies
+
+Currently, there exist a script that consolidates all the domain reports for a given environment.  This report
+ is the pushed to Amazon s3.  This requires the '/etc/korea.properties' contain aws credentials.
+
 ## Usage
 
 Start the service with.
@@ -38,7 +43,7 @@ bundle exec ruby koreapi.rb
 
 ## History
 
-TODO: Write history
+TODO: Continue history
 
 ## Credits
 

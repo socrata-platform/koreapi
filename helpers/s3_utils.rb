@@ -25,7 +25,7 @@ module Sinatra
 
         retries = 3
         begin
-          s3.buckets[bucket].objects[destinationFile].write(:file => sourceFile)
+          s3.buckets[bucket].objects[environment + '-' + destinationFile].write(:file => sourceFile)
         rescue => ex
           retries -= 1
           if retries > 0

@@ -4,7 +4,7 @@ module Sinatra
   module KoreaPI
     module ConfigUtils
 
-      CONFIG_FILE_PATH = "/Users/michaelhotan/Developer/tmp/koreapi.properties"
+      CONFIG_FILE_PATH = "/etc/koreapi.properties"
 
       # -----------------------------------------------------------------------------------------------
       # Returns the configuration file.  If the

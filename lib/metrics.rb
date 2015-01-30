@@ -13,7 +13,8 @@ class Metrics
   BALBOA_ADDRESS = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server')
 
   def initialize
-    @service = Net::HTTP.new(BALBOA_ADDRESS)
+    addr_port = BALBOA_ADDRESS.split(':')
+    @service = Net::HTTP.new(addr_port[0], addr_port[1])
     @service.open_timeout=10000
     @service.read_timeout=30
   end
@@ -46,7 +47,7 @@ class Metrics
 
   def __query(url)
     puts "requesting -> #{url}"
-    request = Net::HTTP::Get.new(BALBOA_ADDRESS)
+    request = Net::HTTP::Get.new(url)
     result = @service.request(request)
     puts "  -> done"
     return result.body

@@ -20,12 +20,12 @@ module Sinatra
                   )
         s3 = AWS::S3.new
 
-        #
-        environment = config['environment']
+        # Make sure that individual domain reports are distinguished by environments
+        destinationFile = config['environment'] + '-' + destinationFile
 
         retries = 3
         begin
-          s3.buckets[bucket].objects[environment + '-' + destinationFile].write(:file => sourceFile)
+          s3.buckets[bucket].objects[destinationFile].write(:file => sourceFile)
         rescue => ex
           retries -= 1
           if retries > 0

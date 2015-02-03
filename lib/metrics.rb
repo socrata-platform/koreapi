@@ -11,10 +11,10 @@ end
 class Metrics
 
   BALBOA_ADDRESS = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server')
+  BALBOA_PORT = 9898
 
   def initialize
-    addr_port = BALBOA_ADDRESS.split(':')
-    @service = Net::HTTP.new(addr_port[0], addr_port[1])
+    @service = Net::HTTP.new(BALBOA_ADDRESS, BALBOA_PORT)
     @service.open_timeout=10000
     @service.read_timeout=30
   end

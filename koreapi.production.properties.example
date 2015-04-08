@@ -4,5 +4,7 @@ aws.region = [AWS Region]
 environment = [Deployment Environment]
 core.server.host = [Core Server Host in Environment]
 core.server.port = 8081 # Current Standard Port
-metric-config.balboa.server.host = [Balboa Load Balancer in Environment] # In current configuration, this is a load balancer so it does not hit the standard Balboa port, 2012.
-metric-config.balboa.server.port = 9898 # Current Port for Load Balancer
+# In current configuration, this is a load balancer so it does not hit the standard Balboa port, 2012
+metric-config.balboa.server.host = [Balboa Load Balancer in Environment] 
+# Current Port for Load Balancer
+metric-config.balboa.server.port = 9898 

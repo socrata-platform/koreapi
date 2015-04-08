@@ -37,7 +37,7 @@ bundle exec ruby koreapi.rb
 
 By default, the server uses the settings in [./koreapi.default.properties](./koreapi.default.properties) unless the file "/etc/koreapi.properties" exists.
 
-An example production configuration file is provided at [./koreapi.default.properties](./koreapi.production.properties.example).
+An example production configuration file is provided at [./koreapi.production.properties.example](./koreapi.production.properties.example).
 
 ## Contributing
 

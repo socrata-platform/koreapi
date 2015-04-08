@@ -33,6 +33,12 @@ Start the service with.
 bundle exec ruby koreapi.rb
 ```
 
+### Config File
+
+By default, the server uses the settings in (./koreapi.default.properties) unless the file "/etc/koreapi.properties" exists.
+
+An example production configuration file is provided at (./koreapi.production.properties.example).
+
 ## Contributing
 
 1. Fork it!

@@ -3,13 +3,11 @@ require 'sinatra/base'
 require_relative '../helpers/config_utils'
 
 class Domains
-
-  CORE_ADDRESS = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server')
+  CORE_HOST = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.host')
+  CORE_PORT = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.port')
 
   def get_domains
-
-    addr_port = CORE_ADDRESS.split(":")
-    service = Net::HTTP.new(addr_port[0], addr_port[1])
+    service = Net::HTTP.new(CORE_HOST, CORE_PORT)
     url = '/domains?method=all'
     request = Net::HTTP::Get.new(url)
     result = service.request(request)

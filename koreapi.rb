@@ -3,6 +3,12 @@ require 'json'
 require 'sinatra/base'
 require 'parseconfig'
 require 'tempfile'
+require 'logger'
+
+if $log.nil?
+  $log = Logger.new(STDOUT)
+  $log.level = Logger::DEBUG
+end
 
 require_relative 'helpers/param_utils'
 require_relative 'helpers/s3_utils'

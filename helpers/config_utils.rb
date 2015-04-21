@@ -14,7 +14,7 @@ module Sinatra
       # config_file_path: The configuration file path.
       # return the first non nil attribute.
       # -----------------------------------------------------------------------------------------------
-      def self.get_first_attr(key, config_file_path = CONFIG_FILE_PATH, default_value = nil)
+      def self.get_first_attr(key, default_value = nil, config_file_path = CONFIG_FILE_PATH)
         vals = get_attrs(key, get_config_file_or_defaults(config_file_path))
         return vals.find{|s| !s.nil?} unless vals.nil? or vals.empty?
         return default_value
@@ -28,7 +28,7 @@ module Sinatra
       # config_file_path: The configuration file path.
       # returns An array of all the attribute values.
       # -----------------------------------------------------------------------------------------------
-      def self.get_attrs(key, config_file_path = CONFIG_FILE_PATH, default_value = [])
+      def self.get_attrs(key, default_value = [], config_file_path = CONFIG_FILE_PATH)
         raw_value = get_config(get_config_file_or_defaults(config_file_path))[key]
         return raw_value.split(',') unless raw_value.nil?
         return default_value

@@ -11,7 +11,7 @@ end
 class Metrics
 
   BALBOA_HOST = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server.host')
-  BALBOA_PORT = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server.port')
+  BALBOA_PORT = Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server.port', 2012)
 
   def initialize
     @service = Net::HTTP.new(BALBOA_HOST, BALBOA_PORT)

@@ -7,12 +7,42 @@ module Sinatra
       CONFIG_FILE_PATH = "/etc/koreapi.properties"
 
       # -----------------------------------------------------------------------------------------------
+      # Returns the first Attribute value for the provided attribute key.  Nil is returned
+      # if the key is inexistent.
+      #
+      # key: Attribute key within the property file. Ex. <key> = <value>
+      # config_file_path: The configuration file path.
+      # return the first non nil attribute.
+      # -----------------------------------------------------------------------------------------------
+      def self.get_first_attr(key, config_file_path = CONFIG_FILE_PATH, default_value = nil)
+        vals = get_attrs(key, get_config_file_or_defaults(config_file_path))
+        return vals.find{|s| !s.nil?} unless vals.nil? or vals.empty?
+        return default_value
+      end
+
+      # -----------------------------------------------------------------------------------------------
+      # Returns an array of all the attribute values.  This assumes that attribute values
+      # are ',' separated.  nil is returned if the key is inexistent.
+      #
+      # key: Attribute key within the property file. Ex. <key> = <value>
+      # config_file_path: The configuration file path.
+      # returns An array of all the attribute values.
+      # -----------------------------------------------------------------------------------------------
+      def self.get_attrs(key, config_file_path = CONFIG_FILE_PATH, default_value = [])
+        raw_value = get_config(get_config_file_or_defaults(config_file_path))[key]
+        return raw_value.split(',') unless raw_value.nil?
+        return default_value
+      end
+
+      private
+
+      # -----------------------------------------------------------------------------------------------
       # Tests to see if the config file passed exists and returns a valid config path.       #
       #
       # config_file_path: The file path of the configuration file
       #
       # returns: A valid path to a config file. If path passed does not exists, it returns the path
-      #   to the default configuration file included in the repo. Otherwise, it returns 
+      #   to the default configuration file included in the repo. Otherwise, it returns
       #   the path passed.
       # -----------------------------------------------------------------------------------------------
       def self.get_config_file_or_defaults(config_file_path)
@@ -35,30 +65,6 @@ module Sinatra
       # -----------------------------------------------------------------------------------------------
       def self.get_config(config_file_path = CONFIG_FILE_PATH)
         return ParseConfig.new(get_config_file_or_defaults(config_file_path))
-      end
-
-
-      # -----------------------------------------------------------------------------------------------
-      # Returns the first Attribute value for the provided attribute key
-      #
-      # key: Attribute key within the property file. Ex. <key> = <value>
-      # config_file_path: The configuration file path.
-      # return the first non nil attribute.
-      # -----------------------------------------------------------------------------------------------
-      def self.get_first_attr(key, config_file_path = CONFIG_FILE_PATH)
-        return get_attrs(key, get_config_file_or_defaults(config_file_path)).find{|s| !s.nil?}
-      end
-
-      # -----------------------------------------------------------------------------------------------
-      # Returns an array of all the attribute values.  This assumes that attribute values
-      # are ',' separated.
-      #
-      # key: Attribute key within the property file. Ex. <key> = <value>
-      # config_file_path: The configuration file path.
-      # returns An array of all the attribute values.
-      # -----------------------------------------------------------------------------------------------
-      def self.get_attrs(key, config_file_path = CONFIG_FILE_PATH)
-        return get_config(get_config_file_or_defaults(config_file_path))[key].split(',')
       end
 
     end

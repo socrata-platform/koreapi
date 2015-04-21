@@ -4,7 +4,7 @@ require_relative '../helpers/config_utils'
 
 class Domains
   CORE_HOST = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.host')
-  CORE_PORT = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.port')
+  CORE_PORT = Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.port', 8081)
 
   def get_domains
     service = Net::HTTP.new(CORE_HOST, CORE_PORT)

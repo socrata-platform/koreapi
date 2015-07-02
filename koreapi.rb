@@ -99,6 +99,14 @@ class KoreaPI < Sinatra::Base
       return metaData.errors
     end
 
+    File.open("js/underscore-min.js") do |file|
+        cxt.eval(file, "js/underscore-min.js")
+    end
+
+    File.open("js/csv/csv.js") do |file|
+        cxt.eval(file, "js/csv/csv.js")
+    end
+
     cxt.eval('runAndWriteToFile()')
     if !metaData.errors.nil?
       content_type ( metaData.content_type || "text/html" )
@@ -115,7 +123,7 @@ class KoreaPI < Sinatra::Base
         return push_to_s3(bucket, tempFile.path, destinationFile)
       end
     end
-    send_file(tempFile, :disposition => 'attachment', :filename => params["name"])
+    send_file(tempFile, :disposition => 'attachment', :filename => "#{params["name"]}.csv")
     tempFile.delete
   end
 

@@ -2,7 +2,9 @@
  * Domain Report; AKA: Saf Report
  */
 
-info = function () {
+var USED_TO_IMPLEMENT_SETS = "ANY VALUE WILL DO";
+
+var info = function () {
     var ret = {};
     ret['name'] = "Domain Report";
     ret['description'] = "Monthly Report of all Site Metrics";
@@ -13,7 +15,13 @@ info = function () {
     return JSON.stringify(ret)
 };
 
-runAndWriteToFile = function () {
+var millisecondsFromEpochToISODateString = function(milliseconds) {
+  var date = new Date(0);
+  date.setUTCSeconds(parseInt(milliseconds) / 1000);
+  return date.toISOString();
+};
+
+var runAndWriteToFile = function () {
     if (start == null || end == null) {
         scriptlet.errors = "This scriptlet requires a start and end date"
     } else {
@@ -28,38 +36,50 @@ runAndWriteToFile = function () {
               scriptlet.log("Already processed domain " + domainName);
               continue
           }
-          uniqueDomainIds[domainId] = "";
+          uniqueDomainIds[domainId] = USED_TO_IMPLEMENT_SETS;
+
           scriptlet.log("Working on domain " + domainName);
           var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
+
           for (var i = 0; i < domainMetrics.length; i++) {
-              var s = new Date(0);
-              s.setUTCSeconds(parseInt(domainMetrics[i]["start"]) / 1000);
-              var e = new Date(0);
-              e.setUTCSeconds(parseInt(domainMetrics[i]["end"]) / 1000);
-              scriptlet.log("    range " + s + " => " + e);
+              var rangeMetrics = {
+                start: millisecondsFromEpochToISODateString(domainMetrics[i].start),
+                end: millisecondsFromEpochToISODateString(domainMetrics[i].end),
+                domain: domainName
+              };
+
+              scriptlet.log("    range " + rangeMetrics.start + " => " + rangeMetrics.end);
+
               var data = domainMetrics[i]["metrics"];
+
               for (var name in data) {
-                  uniqueMetricNames[name] = ""
+                  uniqueMetricNames[name] = USED_TO_IMPLEMENT_SETS;
+                  rangeMetrics[name] = data[name]["value"];
               }
-              metrics.push([domainName, s.toISOString(), e.toISOString(), data])
+
+              metrics.push(rangeMetrics);
           }
           scriptlet.log("Done with " + domainName)
       }
-      var metricNames = Object.keys(uniqueMetricNames).sort();
-      tempFile.write("domain, start, end," + metricNames.join(", ") + "\n");
-      for (var row = 0; row < metrics.length; row++) {
-          var newRow = metrics[row][0] + "," + metrics[row][1] + "," + metrics[row][2] + ",";
-          for (var itr = 0; itr < metricNames.length; itr++) {
-              var metric = metrics[row][3][metricNames[itr]];
-              if (metric) {
-                  newRow = newRow + metric["value"] + ","
-              } else {
-                  newRow = newRow + ","
-              }
+
+      var metricNames = Object.keys(uniqueMetricNames).map(function (value) { return value.replace(/\r?\n|\r/g, " "); }).sort();
+      var fields = ["domain", "start", "end"].concat(metricNames);
+      fields = fields.map(function(value) {
+        return { id: value };
+      });
+
+      for(var metricIndex = 0; metricIndex < metrics.length; metricIndex++){
+        for(var metricNameIndex = 0; metricNameIndex < metricNames.length; metricNameIndex++) {
+          if(!metrics[metricIndex][metricNames[metricNameIndex]]){
+            metrics[metricIndex][metricNames[metricNameIndex]] = "";
           }
-          newRow = newRow + "\n"
-          tempFile.write(newRow);
+        }
       }
+
+      tempFile.write(CSV.serialize({
+        fields: fields,
+        records: metrics
+      },{}))
     }
 };
 

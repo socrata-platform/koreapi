@@ -1,0 +1,3 @@
+[submodule "js/csv"]
+	path = js/csv
+	url = git@github.com:okfn/csv.js.git

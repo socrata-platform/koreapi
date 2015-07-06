@@ -13,10 +13,10 @@ var info = function () {
     return JSON.stringify(ret)
 };
 
-var millisecondsFromEpochToDate = function(milliseconds) {
+var millisecondsFromEpochToISODateString = function(milliseconds) {
   var date = new Date(0);
   date.setUTCSeconds(parseInt(milliseconds) / 1000);
-  return date;
+  return date.toISOString();
 };
 
 var runAndWriteToFile = function () {
@@ -24,7 +24,7 @@ var runAndWriteToFile = function () {
         scriptlet.errors = "This scriptlet requires a start and end date"
     } else {
       scriptlet.content_type = "application/csv"
-      scriptlet.filename = "domain_report"
+      scriptlet.filename = "domain_report.csv"
       var uniqueMetricNames = {};
       var metrics = [];
       var uniqueDomainIds = {}
@@ -41,8 +41,8 @@ var runAndWriteToFile = function () {
 
           for (var i = 0; i < domainMetrics.length; i++) {
               var rangeMetrics = {};
-              rangeMetrics.start = millisecondsFromEpochToDate(domainMetrics[i].start)
-              rangeMetrics.end = millisecondsFromEpochToDate(domainMetrics[i].end)
+              rangeMetrics.start = millisecondsFromEpochToISODateString(domainMetrics[i].start)
+              rangeMetrics.end = millisecondsFromEpochToISODateString(domainMetrics[i].end)
               rangeMetrics.domain = domainName;
 
               scriptlet.log("    range " + rangeMetrics.start + " => " + rangeMetrics.end);

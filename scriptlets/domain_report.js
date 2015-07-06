@@ -34,7 +34,7 @@ var runAndWriteToFile = function () {
               scriptlet.log("Already processed domain " + domainName);
               continue
           }
-          uniqueDomainIds[domainId] = "Value That Does Not Matter";
+          uniqueDomainIds[domainId] = "Used to Implements Sets";
 
           scriptlet.log("Working on domain " + domainName);
           var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
@@ -50,7 +50,7 @@ var runAndWriteToFile = function () {
               var data = domainMetrics[i]["metrics"];
 
               for (var name in data) {
-                  uniqueMetricNames[name] = "Value That Does Not Matter";
+                  uniqueMetricNames[name] = "Used to Implements Sets";
                   rangeMetrics[name] = data[name]["value"];
               }
 

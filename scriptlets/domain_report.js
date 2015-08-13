@@ -49,6 +49,10 @@ var runAndWriteToFile = function () {
 
               var data = domainMetrics[i]["metrics"];
 
+              if(data.length == 0) {
+                continue;
+              }
+
               for (var name in data) {
                   uniqueMetricNames[name] = "Used to Implements Sets";
                   rangeMetrics[name] = data[name]["value"];

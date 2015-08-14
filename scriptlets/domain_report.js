@@ -39,17 +39,24 @@ var runAndWriteToFile = function () {
           scriptlet.log("Working on domain " + domainName);
           var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
 
+          scriptlet.log(JSON.stringify(domainMetrics));
+          scriptlet.log(domainMetrics.length);
+
           for (var i = 0; i < domainMetrics.length; i++) {
               var rangeMetrics = {};
               rangeMetrics.start = millisecondsFromEpochToISODateString(domainMetrics[i].start)
               rangeMetrics.end = millisecondsFromEpochToISODateString(domainMetrics[i].end)
               rangeMetrics.domain = domainName;
 
+
               scriptlet.log("    range " + rangeMetrics.start + " => " + rangeMetrics.end);
 
               var data = domainMetrics[i]["metrics"];
 
-              if(data.length == 0) {
+              scriptlet.log(JSON.stringify(Object.keys(data).length));
+              scriptlet.log(JSON.stringify(data));
+
+              if(Object.keys(data).length == 0) {
                 continue;
               }
 
@@ -71,7 +78,7 @@ var runAndWriteToFile = function () {
 
       for(var metricIndex = 0; metricIndex < metrics.length; metricIndex++){
         for(var metricNameIndex = 0; metricNameIndex < metricNames.length; metricNameIndex++) {
-          if(!metrics[metricIndex][metricNames[metricNameIndex]]){
+          if(metrics[metricIndex][metricNames[metricNameIndex]] === undefined){
             metrics[metricIndex][metricNames[metricNameIndex]] = "";
           }
         }

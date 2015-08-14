@@ -39,9 +39,6 @@ var runAndWriteToFile = function () {
           scriptlet.log("Working on domain " + domainName);
           var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
 
-          scriptlet.log(JSON.stringify(domainMetrics));
-          scriptlet.log(domainMetrics.length);
-
           for (var i = 0; i < domainMetrics.length; i++) {
               var rangeMetrics = {};
               rangeMetrics.start = millisecondsFromEpochToISODateString(domainMetrics[i].start)
@@ -52,9 +49,6 @@ var runAndWriteToFile = function () {
               scriptlet.log("    range " + rangeMetrics.start + " => " + rangeMetrics.end);
 
               var data = domainMetrics[i]["metrics"];
-
-              scriptlet.log(JSON.stringify(Object.keys(data).length));
-              scriptlet.log(JSON.stringify(data));
 
               if(Object.keys(data).length == 0) {
                 continue;

@@ -1,0 +1,39 @@
+FROM socrata/ruby2.2
+
+EXPOSE 4567
+
+# Install all build dependencies
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  libxml2-dev \
+  libxslt-dev \
+  ruby2.2-dev
+
+# Environment Variables
+ENV AWS_ACCESS_KEY ""
+ENV AWS_SECRET_ACCESS_KEY ""
+ENV AWS_REGION ""
+ENV AWS_CONFIG aws_credentials
+ENV KOREAPI_CONFIG koreapi.properties
+ENV APP_DIR /srv/koreapi
+ENV GEM_DIR /srv/gems
+ENV CONFIG_DIR /etc
+
+# Create the directories 
+RUN mkdir -p $APP_DIR $GEM_DIR $CONFIG_DIR
+
+# Socrata Owns all
+RUN chown -R socrata:socrata $APP_DIR
+RUN chown -R socrata:socrata $GEM_DIR
+RUN chown -R socrata:socrata $CONFIG_DIR
+
+# Working directory
+WORKDIR $APP_DIR
+COPY . $APP_DIR
+
+COPY docker/ship.d/run /etc/ship.d/run
+COPY docker/${KOREAPI_CONFIG}.j2 ${CONFIG_DIR}/
+
+RUN bundle install --path $GEM_DIR --without=development --deployment
+
+RUN chown -R socrata:socrata .

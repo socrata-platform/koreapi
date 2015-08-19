@@ -17,11 +17,11 @@ runAndWriteToFile = function () {
     if (start == null || end == null) {
         scriptlet.errors = "This scriptlet requires a start and end date"
     } else {
-      scriptlet.content_type = "application/csv"
-      scriptlet.filename = "domain_report.csv"
+      scriptlet.content_type = "application/csv";
+      scriptlet.filename = "domain_report.csv";
       var uniqueMetricNames = {};
       var metrics = [];
-      var uniqueDomainIds = {}
+      var uniqueDomainIds = {};
       for (var domainName in domains) {
           var domainId = domains[domainName];
           if (uniqueDomainIds[domainId] != null) {

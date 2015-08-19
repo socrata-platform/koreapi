@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+# If AWS Credentials were configured then source the Environment variables.
+[ -f "/dev/shm/${AWS_CONFIG}" ] && source "/dev/shm/${AWS_CONFIG}"
+
+/bin/env_parse ${CONFIG_DIR}/${KOREAPI_CONFIG}.j2
+
+cd ${APP_DIR}
+# Using exec to replace the current bash script running with PID1 with Unicorn
+# This allows docker to send signals to unicorn, allowing for graceful shutdown
+exec su socrata -c "bundle exec ruby koreapi.rb"

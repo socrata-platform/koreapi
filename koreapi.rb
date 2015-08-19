@@ -10,6 +10,7 @@ if $log.nil?
   $log.level = Logger::DEBUG
 end
 
+require_relative 'helpers/config_utils'
 require_relative 'helpers/param_utils'
 require_relative 'helpers/s3_utils'
 require_relative 'lib/metrics'
@@ -120,5 +121,13 @@ class KoreaPI < Sinatra::Base
   end
 
 end
+
+puts 'Configuration settings'
+puts "Environment: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('environment')}"
+puts "Core Server: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.host')}:#{Sinatra::KoreaPI::ConfigUtils.get_first_attr('core.server.port')}"
+puts "Balboa Server: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server.host')}:#{Sinatra::KoreaPI::ConfigUtils.get_first_attr('metric-config.balboa.server.port')}"
+puts "AWS Access: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('aws.access_key_id')}
+AWS Secret: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('aws.secret_access_key')}
+AWS Region: #{Sinatra::KoreaPI::ConfigUtils.get_first_attr('aws.region')}"
 
 KoreaPI.run!

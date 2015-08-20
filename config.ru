@@ -4,9 +4,8 @@ require 'logger'
 
 Bundler.require
 
-root_dir = File.dirname(__FILE__)
 
-$stdout.puts("Redirecting output to log/sinatra.log")
+$stdout.puts('Redirecting output to log/sinatra.log')
 FileUtils.mkdir_p 'log' unless File.exists?('log')
 log = File.new("log/sinatra.log", "a")
 

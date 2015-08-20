@@ -27,6 +27,12 @@ class Metrics
     return __range(entity, {"start" => start, "end" => finish})
   end
 
+  # Wraps a series metrics method call
+  #
+  # @param - entity The entity ID to find metrics for
+  # @param - start The Start Date Time
+  # @param - start finish The end of the series window
+  # @param - type The interval type to find metrics for.
   def series(entity, start, finish, type)
     return __series(entity, {"start" => start, "end" => finish, "period" => type})
   end

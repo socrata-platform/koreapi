@@ -1,4 +1,4 @@
-FROM socrata/ruby2.3
+FROM socrata/ruby2.2
 
 EXPOSE 4567
 

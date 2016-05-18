@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$COMMAND" -eq "PUSH_TO_S3" ]; then
+if [ "$COMMAND" == "PUSH_TO_S3" ]; then
   today=`date +'%Y-%m-%d'`
   start="2009-01-01"
   curl -s -S "http://koreapi:4567/scriptlet/domain_report?&start=$start&end=$today&push_to_s3=true"

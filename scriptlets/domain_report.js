@@ -50,8 +50,8 @@ var runAndWriteToFile = function () {
         }
       };
 
-      iterateOverDomainMetrics(function(rangeMetric) {
-        var data = domainMetrics[i]["metrics"];
+      iterateOverDomainMetrics(function(domainMetrics) {
+        var data = domainMetrics["metrics"];
 
         for (var name in data) {
           uniqueMetricNames[name] = USED_TO_IMPLEMENT_SETS;
@@ -71,16 +71,16 @@ var runAndWriteToFile = function () {
 
       tempFile.flush()
 
-      iterateOverDomainMetrics(function(rangeMetric) {
+      iterateOverDomainMetrics(function(domainMetrics) {
         var rangeMetrics = {
-          start: millisecondsFromEpochToISODateString(domainMetrics[i].start),
-          end: millisecondsFromEpochToISODateString(domainMetrics[i].end),
+          start: millisecondsFromEpochToISODateString(domainMetrics.start),
+          end: millisecondsFromEpochToISODateString(domainMetrics.end),
           domain: domainName
         };
 
-        scriptlet.log("    range " + rangeMetrics.start + " => " + rangeMetrics.end);
+        scriptlet.log("    range " + domainMetrics.start + " => " + domainMetrics.end);
 
-        var data = domainMetrics[i]["metrics"];
+        var data = domainMetrics["metrics"];
 
         for (var name in data) {
           rangeMetrics[name] = data[name]["value"];

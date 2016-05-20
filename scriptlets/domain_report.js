@@ -89,7 +89,7 @@ var runAndWriteToFile = function () {
           }
         }
 
-        tempFile.write(CSV.serialize({fields: fields, records: [rangeMetrics]}).split('\n')[1]);
+        tempFile.write(CSV.serialize({fields: fields, records: [rangeMetrics]}).split('\n')[1] + '\n');
       });
     }
 };

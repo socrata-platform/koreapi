@@ -43,7 +43,7 @@ var runAndWriteToFile = function () {
             var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
 
             for (var i = 0; i < domainMetrics.length; i++) {
-              action(domainMetrics[i]);
+              action(domainMetrics[i], domainName);
             }
           scriptlet.log("Done with " + domainName)
         }
@@ -68,7 +68,7 @@ var runAndWriteToFile = function () {
         records: []
       },{}));
 
-      iterateOverDomainMetrics(function(domainMetrics) {
+      iterateOverDomainMetrics(function(domainMetrics, domainName) {
         var rangeMetrics = {
           start: millisecondsFromEpochToISODateString(domainMetrics.start),
           end: millisecondsFromEpochToISODateString(domainMetrics.end),

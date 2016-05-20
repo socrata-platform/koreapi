@@ -12,7 +12,7 @@ var info = function () {
     ret['optional_params'] = { push_to_s3 : { class: "string", default: "false" } };
     ret['s3_bucket'] = "socrata.domain.report";
     scriptlet.content_type = "application/json";
-    return JSON.stringify(ret)
+    return JSON.stringify(ret);
 };
 
 var millisecondsFromEpochToISODateString = function(milliseconds) {
@@ -31,6 +31,7 @@ var runAndWriteToFile = function () {
       var metrics = [];
       var uniqueDomainIds = {};
       for (var domainName in domains) {
+          global.gc();
           var domainId = domains[domainName];
           if (uniqueDomainIds[domainId] != null) {
               scriptlet.log("Already processed domain " + domainName);
@@ -61,6 +62,8 @@ var runAndWriteToFile = function () {
           }
           scriptlet.log("Done with " + domainName)
       }
+
+      global.gc();
 
       var metricNames = Object.keys(uniqueMetricNames).map(function (value) { return value.replace(/\r?\n|\r/g, " "); }).sort();
       var fields = ["domain", "start", "end"].concat(metricNames);

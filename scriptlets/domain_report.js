@@ -28,10 +28,9 @@ var runAndWriteToFile = function () {
       scriptlet.content_type = "application/csv";
       scriptlet.filename = "domain_report.csv";
       var uniqueMetricNames = {};
-      var metrics = [];
-      var uniqueDomainIds = {};
 
       var iterateOverDomainMetrics = function(action) {
+        var uniqueDomainIds = {};
         for (var domainName in domains) {
             var domainId = domains[domainName];
             if (uniqueDomainIds[domainId] != null) {
@@ -67,7 +66,7 @@ var runAndWriteToFile = function () {
       tempFile.write(CSV.serialize({
         fields: fields,
         records: []
-      },{}))
+      },{}));
 
       iterateOverDomainMetrics(function(domainMetrics) {
         var rangeMetrics = {

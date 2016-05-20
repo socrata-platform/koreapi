@@ -69,8 +69,6 @@ var runAndWriteToFile = function () {
         records: []
       },{}))
 
-      tempFile.flush()
-
       iterateOverDomainMetrics(function(domainMetrics) {
         var rangeMetrics = {
           start: millisecondsFromEpochToISODateString(domainMetrics.start),

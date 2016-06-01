@@ -3,7 +3,11 @@
 if [ "$KOREAPI_COMMAND" == "PUSH_TO_S3" ]; then
   today=`date +'%Y-%m-%d'`
   start="2009-01-01"
-  curl -s -S "http://koreapi:4567/scriptlet/domain_report?&start=$start&end=$today&push_to_s3=true"
+  if [ -z ${KOREAPI_HOST+x} ]; then
+    KOREAPI_HOST='koreapi'
+  fi
+
+  curl -s -S "http://$KOREAPI_HOST:4567/scriptlet/domain_report?&start=$start&end=$today&push_to_s3=true"
 else
   set -e
 

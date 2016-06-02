@@ -7,7 +7,11 @@ if [ "$KOREAPI_COMMAND" == "PUSH_TO_S3" ]; then
     KOREAPI_HOST='koreapi'
   fi
 
-  curl -s -S "http://${KOREAPI_HOST}:4567/scriptlet/domain_report?&start=${start}&end=${today}&push_to_s3=true"
+  if [ -z ${KOREAPI_PORT+x} ]; then
+    KOREAPI_PORT='4567'
+  fi
+
+  curl -s -S "http://${KOREAPI_HOST}:${KOREAPI_PORT}/scriptlet/domain_report?&start=${start}&end=${today}&push_to_s3=true"
 else
   set -e
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ "$KOREAPI_COMMAND" == "PUSH_TO_S3" ]; then
-  today=`date +'%Y-%m-%d'`
-  start=`date -d "$TIME_BACK" +'%Y-%m-%d'`
+  end=`date -d "$ENDING_DATE" "+'%Y-%m-%d'`
+  start=`date -d "$end - $INTERVAL_BACK" +'%Y-%m-%d'`
   if [ -z ${KOREAPI_HOST+x} ]; then
     KOREAPI_HOST='koreapi'
   fi
@@ -11,7 +11,7 @@ if [ "$KOREAPI_COMMAND" == "PUSH_TO_S3" ]; then
     KOREAPI_PORT='4567'
   fi
 
-  curl -s -S "http://${KOREAPI_HOST}:${KOREAPI_PORT}/scriptlet/domain_report?&start=${start}&end=${today}&push_to_s3=true"
+  curl -s -S "http://${KOREAPI_HOST}:${KOREAPI_PORT}/scriptlet/domain_report?&start=${start}&end=${end}&push_to_s3=true"
 else
   set -e
 

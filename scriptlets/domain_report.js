@@ -7,8 +7,8 @@ var USED_TO_IMPLEMENT_SETS = "ANY VALUE WILL DO";
 var info = function () {
     var ret = {};
     ret['name'] = "Domain Report";
-    ret['description'] = "Monthly Report of all Site Metrics";
-    ret['params'] = { start: { class: "date", default: "2009-01-01"}, end: { class: "date", default: "2014-01-01"} };
+    ret['description'] = "Report of all Site Metrics";
+    ret['params'] = { start: { class: "date", default: "2009-01-01"}, end: { class: "date", default: "2014-01-01"}, period: { class: "string", default: "DAILY"}};
     ret['optional_params'] = { push_to_s3 : { class: "string", default: "false" } };
     ret['s3_bucket'] = "socrata.domain.report";
     scriptlet.content_type = "application/json";
@@ -22,8 +22,8 @@ var millisecondsFromEpochToISODateString = function(milliseconds) {
 };
 
 var runAndWriteToFile = function () {
-    if (start == null || end == null) {
-        scriptlet.errors = "This scriptlet requires a start and end date";
+    if (start == null || end == null || period == null) {
+        scriptlet.errors = "This scriptlet requires a start data, an end date, and a period.";
     } else {
       scriptlet.content_type = "application/csv";
       scriptlet.filename = "domain_report.csv";
@@ -40,7 +40,7 @@ var runAndWriteToFile = function () {
             uniqueDomainIds[domainId] = USED_TO_IMPLEMENT_SETS;
 
             scriptlet.log("Working on domain " + domainName);
-            var domainMetrics = JSON.parse(m.series(domainId, start, end, "MONTHLY"));
+            var domainMetrics = JSON.parse(m.series(domainId, start, end, period));
 
             for (var i = 0; i < domainMetrics.length; i++) {
               action(domainMetrics[i], domainName);

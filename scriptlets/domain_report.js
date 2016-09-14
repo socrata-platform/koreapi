@@ -8,8 +8,8 @@ var info = function () {
     var ret = {};
     ret['name'] = "Domain Report";
     ret['description'] = "Report of all Site Metrics";
-    ret['params'] = { start: { class: "date", default: "2009-01-01"},
-                      end: { class: "date", default: "2014-01-01"},
+    ret['params'] = { start: { class: "date", default: "2016-01-01"},
+                      end: { class: "date", default: "2018-01-01"},
                       period: { class: "summary-type", default: "DAILY"} };
     ret['optional_params'] = { push_to_s3 : { class: "string", default: "false" } };
     ret['s3_bucket'] = "socrata.domain.report";
@@ -25,7 +25,7 @@ var millisecondsFromEpochToISODateString = function(milliseconds) {
 
 var runAndWriteToFile = function () {
     if (start == null || end == null || period == null) {
-        scriptlet.errors = "This scriptlet requires a start data, an end date, and a period.";
+        scriptlet.errors = "This scriptlet requires a start date, an end date, and a period (YEARLY,MONTHLY,DAILY,HOURLY, or FIFTEEN_MINUTE).";
     } else {
       scriptlet.content_type = "application/csv";
       scriptlet.filename = "domain_report.csv";

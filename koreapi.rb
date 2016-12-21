@@ -16,12 +16,15 @@ require_relative 'helpers/s3_utils'
 require_relative 'lib/metrics'
 require_relative 'lib/domains'
 require_relative 'lib/script_metadata'
+require_relative 'logging_middleware'
 
 class KoreaPI < Sinatra::Base
   set :public_folder, File.dirname(__FILE__) + '/public_folder'
 
   helpers Sinatra::KoreaPI::ParamUtils
   helpers Sinatra::KoreaPI::S3Utils
+
+  configure { use LoggingMiddleware, $log }
 
   def initialize()
     super()

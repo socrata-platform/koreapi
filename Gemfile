@@ -5,6 +5,7 @@ end
 
 source 'http://rubygems.org'
 
+gem 'nokogiri', '1.8.5'
 gem 'sinatra', '~>1.3.0'
 gem 'json', '~>1.8.0'
 gem 'therubyracer', :require => 'v8'
